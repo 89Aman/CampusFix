@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { switchMap, map, of } from 'rxjs';
@@ -7,7 +7,7 @@ import { switchMap, map, of } from 'rxjs';
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [RouterOutlet, RouterLink, CommonModule],
+    imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
     templateUrl: './layout.component.html',
     styleUrl: './layout.component.css'
 })
