@@ -1,13 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IssueService, Issue } from '../../services/issue.service';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { GoogleChartsModule, ChartType } from 'angular-google-charts';
 
 @Component({
     selector: 'app-admin-dashboard',
     standalone: true,
-    imports: [CommonModule, BaseChartDirective],
+    imports: [CommonModule, GoogleChartsModule],
     templateUrl: './admin-dashboard.html',
     styleUrl: './admin-dashboard.css'
 })
@@ -16,37 +15,37 @@ export class AdminDashboard implements OnInit {
     analytics: any = null;
     isLoading = true;
 
-    // Chart Configuration
-    public doughnutChartOptions: ChartConfiguration['options'] = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'right',
-                labels: {
-                    color: document.documentElement.classList.contains('dark') ? '#cbd5e1' : '#334155'
-                }
-            }
-        }
+    // Google Chart Configuration
+    chartTitle = 'Status Distribution';
+    chartType = ChartType.PieChart;
+    chartData: any[] = [
+        ['Pending', 1],
+        ['In Progress', 1],
+        ['Resolved', 1]
+    ];
+    chartOptions = {
+        pieHole: 0.4,
+        backgroundColor: 'transparent',
+        legend: {
+            position: 'right',
+            textStyle: { color: this.isDarkMode() ? '#cbd5e1' : '#334155' }
+        },
+        slices: {
+            0: { color: '#eab308' }, // Pending - Yellow
+            1: { color: '#3b82f6' }, // In Progress - Blue
+            2: { color: '#22c55e' }  // Resolved - Green
+        },
+        chartArea: { width: '90%', height: '90%' }
     };
-    public doughnutChartLabels: string[] = ['Pending', 'In Progress', 'Resolved'];
-    public doughnutChartData: ChartData<'doughnut'> = {
-        labels: this.doughnutChartLabels,
-        datasets: [
-            {
-                data: [0, 0, 0],
-                backgroundColor: ['#eab308', '#3b82f6', '#22c55e'],
-                hoverBackgroundColor: ['#ca8a04', '#2563eb', '#16a34a'],
-                hoverOffset: 4
-            }
-        ]
-    };
-    public doughnutChartType: ChartType = 'doughnut';
 
     constructor(private issueService: IssueService) { }
 
     ngOnInit() {
         this.loadData();
+    }
+
+    isDarkMode(): boolean {
+        return document.documentElement.classList.contains('dark');
     }
 
     loadData() {
@@ -72,17 +71,11 @@ export class AdminDashboard implements OnInit {
     }
 
     updateChartData(analytics: any) {
-        this.doughnutChartData = {
-            ...this.doughnutChartData,
-            datasets: [{
-                ...this.doughnutChartData.datasets[0],
-                data: [
-                    analytics.pending || 0,
-                    analytics.in_progress || 0,
-                    analytics.resolved || 0
-                ]
-            }]
-        };
+        this.chartData = [
+            ['Pending', analytics.pending || 0],
+            ['In Progress', analytics.in_progress || 0],
+            ['Resolved', analytics.resolved || 0]
+        ];
     }
 
     updateStatus(issueId: number, status: string) {

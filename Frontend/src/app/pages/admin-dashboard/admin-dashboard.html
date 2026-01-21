@@ -65,10 +65,10 @@
         <div
             class="bg-white dark:bg-slate-800 rounded-lg shadow p-6 border border-slate-200 dark:border-slate-700 h-64 lg:h-auto">
             <h3 class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-4">Status Distribution</h3>
-            <div class="h-48">
-                <canvas baseChart [data]="doughnutChartData" [type]="doughnutChartType"
-                    [options]="doughnutChartOptions">
-                </canvas>
+            <div class="h-48 flex justify-center items-center">
+                <google-chart #chart [title]="chartTitle" [type]="chartType" [data]="chartData" [options]="chartOptions"
+                    style="width: 100%; height: 100%;">
+                </google-chart>
             </div>
         </div>
     </div>
