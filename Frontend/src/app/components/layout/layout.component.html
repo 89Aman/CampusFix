@@ -1,20 +1,17 @@
-<div class="min-h-screen font-sans flex flex-col transition-colors duration-200"
-    [ngClass]="{'bg-slate-900 text-white': isDarkMode, 'bg-slate-50 text-slate-900': !isDarkMode}">
+<div
+    class="min-h-screen font-sans flex flex-col transition-colors duration-200 bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-white">
     <!-- Header -->
     <header
-        class="h-16 border-b flex items-center justify-between px-6 fixed w-full top-0 z-50 transition-colors duration-200"
-        [ngClass]="{'border-slate-800 bg-slate-900': isDarkMode, 'border-slate-200 bg-white': !isDarkMode}">
+        class="h-16 border-b flex items-center justify-between px-6 fixed w-full top-0 z-50 transition-colors duration-200 bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800">
         <div class="flex items-center gap-2">
             <a routerLink="/" class="text-blue-500 font-bold text-xl tracking-tight cursor-pointer">CampusFix</a>
         </div>
 
         <div class="flex items-center gap-6">
             <!-- Theme Toggle -->
-            <button (click)="toggleTheme()" class="transition-colors p-2 rounded-full hover:bg-slate-800/50"
-                [ngClass]="{'text-slate-400 hover:text-white': isDarkMode, 'text-slate-500 hover:text-slate-900 hover:bg-slate-100': !isDarkMode}"
+            <button (click)="toggleTheme()"
+                class="transition-colors p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 aria-label="Toggle theme">
-                <!-- Moon icon for Dark Mode (shows when dark is active, to indicate current state, or Sun to switch to light? Usually opposite or current state. Let's show Sun if dark (to switch to light) or Moon if light. Or just the icon representing the mode.) -->
-                <!-- Let's imply: Click to switch. If Dark, show Sun (to switch to light). If Light, show Moon (to switch to dark). -->
                 <svg *ngIf="isDarkMode" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="5" />
@@ -29,28 +26,26 @@
 
             <!-- Auth (Not Logged In) -->
             <a *ngIf="!(user$ | async)" routerLink="/login"
-                class="text-sm font-medium transition-colors px-4 py-2 rounded-md border"
-                [ngClass]="{'text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border-slate-700': isDarkMode, 'text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border-slate-200': !isDarkMode}">
+                class="text-sm font-medium transition-colors px-4 py-2 rounded-md border text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border-slate-200 dark:text-slate-300 dark:hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700">
                 Sign In
             </a>
 
             <!-- User Profile & Logout (Logged In) -->
             <div *ngIf="user$ | async as user" class="flex items-center gap-6">
                 <!-- User Profile -->
-                <button class="transition-colors flex items-center gap-2"
-                    [ngClass]="{'text-slate-400 hover:text-white': isDarkMode, 'text-slate-500 hover:text-slate-900': !isDarkMode}"
+                <button
+                    class="transition-colors flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                     aria-label="Profile">
                     <img *ngIf="user.picture" [src]="user.picture" class="w-8 h-8 rounded-full border border-slate-600">
                     <span *ngIf="!user.picture"
-                        class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                        [ngClass]="{'bg-slate-700': isDarkMode, 'bg-slate-200 text-slate-700': !isDarkMode}">
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white">
                         {{ user.name.charAt(0) }}
                     </span>
                 </button>
 
                 <!-- Logout -->
-                <button (click)="logout()" class="flex items-center gap-2 transition-colors text-sm font-medium"
-                    [ngClass]="{'text-slate-400 hover:text-white': isDarkMode, 'text-slate-500 hover:text-slate-900': !isDarkMode}">
+                <button (click)="logout()"
+                    class="flex items-center gap-2 transition-colors text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

@@ -41,7 +41,6 @@ export class AuthService {
     logout() {
         this.http.get(`${this.apiUrl}/logout`).subscribe(() => {
             this.currentUserSubject.next(null);
-            // Optional: Redirect to home
         });
     }
 }

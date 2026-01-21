@@ -44,7 +44,6 @@ export class StudentSubmitComponent {
         this.isSubmitting = true;
         const formData = new FormData();
 
-        // Combine summary + description as backend expects description
         const fullDescription = this.issue.summary
             ? `[${this.issue.summary}] ${this.issue.description}`
             : this.issue.description;
@@ -61,7 +60,6 @@ export class StudentSubmitComponent {
                 console.log('Issue reported:', res);
                 alert('Issue reported successfully!');
                 this.isSubmitting = false;
-                // Reset form
                 this.issue = { summary: '', location: '', description: '', photo: null };
                 this.selectedFile = null;
                 this.router.navigate(['/student/list']);

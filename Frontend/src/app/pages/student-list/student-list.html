@@ -1,118 +1,69 @@
-<div class="max-w-4xl mx-auto">
-    <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold text-white">Reported Issues</h2>
+<div class="w-full max-w-4xl mx-auto">
+    <div class="mb-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Reported Issues</h1>
         <a routerLink="/student/submit"
-            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-            </svg>
-            Submit New Issue
+            class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+            Report New Issue
         </a>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="loading" class="text-center py-12 text-slate-400">
-        <div class="animate-spin text-blue-500 mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-            </svg>
-        </div>
-        Loading issues...
+    <div *ngIf="isLoading" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+        <p class="mt-4 text-slate-600 dark:text-slate-400">Loading issues...</p>
     </div>
 
-    <!-- Empty State -->
-    <div *ngIf="!loading && issues.length === 0"
-        class="bg-slate-800 rounded-lg p-8 text-center border border-slate-700">
-        <div class="bg-slate-700/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="text-slate-400">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-        </div>
-        <h3 class="text-lg font-medium text-white mb-1">No issues reported yet</h3>
-        <p class="text-slate-400">Be the first to report a maintenance issue on campus.</p>
+    <div *ngIf="!isLoading && issues.length === 0" class="text-center py-12">
+        <p class="text-slate-600 dark:text-slate-400">No issues reported yet.</p>
     </div>
 
-    <!-- Issues List -->
-    <div *ngIf="!loading && issues.length > 0" class="grid gap-6">
+    <div class="space-y-4">
         <div *ngFor="let issue of issues"
-            class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden hover:border-slate-600 transition-colors">
-            <div class="p-6">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded text-xs font-medium border" [ngClass]="{
-                'bg-red-500/10 text-red-500 border-red-500/20': issue.severity === 'High' || issue.severity === 'Critical',
-                'bg-yellow-500/10 text-yellow-500 border-yellow-500/20': issue.severity === 'Medium',
-                'bg-green-500/10 text-green-500 border-green-500/20': issue.severity === 'Low'
-              }">
-                            {{ issue.severity }}
-                        </span>
-                        <span
-                            class="px-2.5 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300 border border-slate-600">
-                            {{ issue.category }}
-                        </span>
-                        <span class="text-slate-500 text-sm flex items-center gap-1 ml-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            {{ issue.created_at | date }}
-                        </span>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm px-2 py-1 rounded-full" [ngClass]="{
-                'bg-blue-500/10 text-blue-400': issue.status === 'New' || issue.status === 'Open',
-                'bg-yellow-500/10 text-yellow-400': issue.status === 'In Progress',
-                'bg-green-500/10 text-green-400': issue.status === 'Resolved'
-              }">
-                            {{ issue.status }}
-                        </span>
-                    </div>
+            class="bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 p-6 transition-colors">
+            <div class="flex gap-4">
+                <!-- Image -->
+                <div *ngIf="issue.image_url" class="flex-shrink-0">
+                    <img [src]="'http://localhost:8000' + issue.image_url" alt="Issue"
+                        class="w-24 h-24 object-cover rounded-md">
                 </div>
 
-                <div class="flex gap-4">
-                    <div *ngIf="issue.image_url" class="shrink-0 w-24 h-24 bg-slate-700 rounded-md overflow-hidden">
-                        <img [src]="'http://localhost:8000' + issue.image_url" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-white mb-1">{{ issue.summary || 'Issue Report' }}</h3>
-                        <p class="text-slate-400 text-sm mb-3 line-clamp-2">
-                            {{ issue.description }}
-                        </p>
-                        <div class="flex items-center gap-1 text-slate-500 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                <circle cx="12" cy="10" r="3" />
-                            </svg>
-                            {{ issue.location }}
+                <!-- Content -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">{{ issue.description }}
+                            </h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="inline mr-1">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                                {{ issue.location }}
+                            </p>
                         </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap"
+                            [ngClass]="getStatusClass(issue.status)">
+                            {{ issue.status.replace('_', ' ') | titlecase }}
+                        </span>
                     </div>
-                </div>
-            </div>
 
-            <div class="bg-slate-900/50 px-6 py-3 border-t border-slate-700 flex items-center justify-between">
-                <button (click)="upvote(issue.id)"
-                    class="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors text-sm font-medium group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="group-hover:-translate-y-0.5 transition-transform">
-                        <path d="m18 15-6-6-6 6" />
-                    </svg>
-                    Upvote ({{ issue.upvotes }})
-                </button>
-                <div class="text-xs text-slate-500">
-                    Priority Score: {{ issue.priority_score }}
+                    <div class="flex items-center gap-4 mt-4">
+                        <button (click)="upvote(issue.id)"
+                            class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M7 10v12" />
+                                <path
+                                    d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
+                            </svg>
+                            <span class="font-medium">{{ issue.upvotes }}</span>
+                        </button>
+                        <span class="text-xs text-slate-500 dark:text-slate-500">
+                            {{ issue.created_at | date:'short' }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
