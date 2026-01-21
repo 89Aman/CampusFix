@@ -169,34 +169,50 @@ async def create_issue(
         image: Optional[UploadFile] = File(None),
         db: Session = Depends(get_db)
 ):
-    user = get_current_user(request)
-    if not user:
-        raise HTTPException(status_code=401, detail="Authentication required")
-    user_id = user.get('sub')
+    try:
+        user = get_current_user(request)
+        if not user:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        user_id = user.get('sub')
+        
+        print(f"DEBUG: Creating issue for user: {user}")
+        
+        # robust name extraction
+        reporter_name = user.get('name')
+        if not reporter_name:
+            reporter_name = user.get('given_name', '') + ' ' + user.get('family_name', '')
+            reporter_name = reporter_name.strip()
+        if not reporter_name:
+             reporter_name = user.get('email', '').split('@')[0]
 
-    image_url = None
-    if image:
-        file_extension = os.path.splitext(image.filename)[1]
-        filename = f"{datetime.now().timestamp()}{file_extension}"
-        file_path = f"static/uploads/{filename}"
+        image_url = None
+        if image:
+            file_extension = os.path.splitext(image.filename)[1]
+            filename = f"{datetime.now().timestamp()}{file_extension}"
+            file_path = f"static/uploads/{filename}"
 
-        with open(file_path, "wb") as f:
-            content = await image.read()
-            f.write(content)
-        image_url = f"/static/uploads/{filename}"
+            with open(file_path, "wb") as f:
+                content = await image.read()
+                f.write(content)
+            image_url = f"/static/uploads/{filename}"
 
-    issue = Issue(
-        description=description,
-        location=location,
-        image_url=image_url,
-        user_id=user_id,
-        reporter_name=user.get('name'),
-        reporter_email=user.get('email')
-    )
-    db.add(issue)
-    db.commit()
-    db.refresh(issue)
-    return issue
+        issue = Issue(
+            description=description,
+            location=location,
+            image_url=image_url,
+            user_id=user_id,
+            reporter_name=reporter_name,
+            reporter_email=user.get('email')
+        )
+        db.add(issue)
+        db.commit()
+        db.refresh(issue)
+        return issue
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"ERROR in create_issue: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/issues", response_model=list[IssueResponse])

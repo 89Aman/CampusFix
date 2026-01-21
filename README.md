@@ -30,9 +30,12 @@ Students and staff frequently face infrastructure issues like **broken fans, dir
 - **📱 Responsive Design**: Works on mobile and desktop.
 - **🌗 Dark Mode**: Full dark theme support for comfortable viewing.
 
-### 🛠️ For Administration
-- **📊 Admin Dashboard**: Centralized view of all reported issues.
-- **🚦 Status Management**: Update status from Pending to Resolved.
+### For Administration
+- **Dashboard Overview**: View live analytics (Total, Pending, Resolved).
+- **Interactive Charts**: Visualize issue status distribution.
+- **Priority System**: Auto-calculated priority (Low/Medium/High) based on upvotes.
+- **Issue Details**: View reporter information (Name/Email) and full issue context.
+- **Status Management**: Update issue status realistically.
 - **🛡️ Role-Based Access**: Secure admin features protected by email authorization.
 - **📈 Analytics**: Track submission trends (coming soon).
 

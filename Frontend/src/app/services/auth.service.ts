@@ -18,21 +18,24 @@ export class AuthService {
     currentUser$ = this.currentUserSubject.asObservable();
 
     constructor(private http: HttpClient) {
-        console.log('AuthService: Constructor called, loading session...');
-        this.loadSession();
+        console.log('AuthService: Constructor called');
     }
 
-    private loadSession() {
-        console.log('AuthService: Calling /auth/me...');
-        this.http.get<User | null>(`${this.apiUrl}/me`).subscribe({
-            next: (user) => {
-                console.log('AuthService: Session loaded, user:', user);
-                this.currentUserSubject.next(user);
-            },
-            error: (err) => {
-                console.error('AuthService: Session load failed:', err);
-                this.currentUserSubject.next(null);
-            }
+    public initialize(): Promise<void> {
+        console.log('AuthService: Key initializing session...');
+        return new Promise((resolve) => {
+            this.http.get<User | null>(`${this.apiUrl}/me`).subscribe({
+                next: (user) => {
+                    console.log('AuthService: Session loaded, user:', user);
+                    this.currentUserSubject.next(user);
+                    resolve();
+                },
+                error: (err) => {
+                    console.error('AuthService: Session load failed:', err);
+                    this.currentUserSubject.next(null);
+                    resolve();
+                }
+            });
         });
     }
 
