@@ -152,12 +152,14 @@ export class StudentSubmitComponent {
         this.issueService.reportIssue(formData).subscribe({
             next: (res) => {
                 console.log('Issue reported successfully:', res);
-                this.isSubmitting = false;
-                // Reset form
+                // Reset form immediately
                 this.issue = { summary: '', location: '', description: '', photo: null };
                 this.selectedFile = null;
-                // Navigate to list to see the submitted issue
-                this.router.navigate(['/student/list']);
+                this.isSubmitting = false;
+                // Navigate immediately to see the new issue
+                this.router.navigate(['/student/list']).then(() => {
+                    console.log('Navigated to issue list');
+                });
             },
             error: (err) => {
                 console.error('Submission failed:', err);

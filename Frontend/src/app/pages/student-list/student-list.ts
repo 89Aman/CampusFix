@@ -23,13 +23,25 @@ export class StudentList implements OnInit {
     loadIssues() {
         console.log('Loading issues from backend...');
         this.isLoading = true;
+
+        // Add timeout to prevent infinite loading
+        const timeout = setTimeout(() => {
+            if (this.isLoading) {
+                console.warn('API call timeout, showing empty state');
+                this.isLoading = false;
+                this.issues = [];
+            }
+        }, 5000); // 5 second timeout
+
         this.issueService.getIssues().subscribe({
             next: (data) => {
+                clearTimeout(timeout); // Clear timeout on success
                 console.log('Issues loaded successfully:', data.length, 'issues');
                 this.issues = data;
                 this.isLoading = false;
             },
             error: (err) => {
+                clearTimeout(timeout); // Clear timeout on error
                 console.error('Failed to load issues:', err);
                 console.error('Error details:', err.message, err.status);
                 this.isLoading = false;
