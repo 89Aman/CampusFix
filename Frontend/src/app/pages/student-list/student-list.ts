@@ -21,15 +21,20 @@ export class StudentList implements OnInit {
     }
 
     loadIssues() {
+        console.log('Loading issues from backend...');
         this.isLoading = true;
         this.issueService.getIssues().subscribe({
             next: (data) => {
+                console.log('Issues loaded successfully:', data.length, 'issues');
                 this.issues = data;
                 this.isLoading = false;
             },
             error: (err) => {
-                console.error('Failed to load issues', err);
+                console.error('Failed to load issues:', err);
+                console.error('Error details:', err.message, err.status);
                 this.isLoading = false;
+                // Show empty state instead of infinite loading
+                this.issues = [];
             }
         });
     }

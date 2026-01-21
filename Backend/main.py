@@ -28,7 +28,12 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "your-s
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+        "http://localhost:56662",  # Alternative dev server port
+        "http://localhost:*"  # Allow any localhost port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
