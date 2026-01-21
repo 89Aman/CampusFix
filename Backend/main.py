@@ -9,6 +9,10 @@ from datetime import datetime
 from authlib.integrations.starlette_client import OAuth
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from models import Base, Issue, engine, get_db
 from pydantic import BaseModel
@@ -72,8 +76,7 @@ class IssueResponse(BaseModel):
     created_at: datetime
     user_id: Optional[str]
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 class StatusUpdate(BaseModel):
@@ -212,4 +215,4 @@ def get_analytics(db: Session = Depends(get_db)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app",  port=8000, reload=True)
