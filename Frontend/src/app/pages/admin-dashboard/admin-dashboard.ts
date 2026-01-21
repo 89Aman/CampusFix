@@ -14,6 +14,8 @@ export class AdminDashboard implements OnInit {
     issues: Issue[] = [];
     analytics: any = null;
     isLoading = true;
+    selectedIssue: Issue | null = null;
+    isModalOpen = false;
 
     // Google Chart Configuration
     chartTitle = 'Status Distribution';
@@ -105,5 +107,15 @@ export class AdminDashboard implements OnInit {
             case 'resolved': return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
             default: return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
         }
+    }
+
+    openModal(issue: Issue) {
+        this.selectedIssue = issue;
+        this.isModalOpen = true;
+    }
+
+    closeModal() {
+        this.isModalOpen = false;
+        this.selectedIssue = null;
     }
 }

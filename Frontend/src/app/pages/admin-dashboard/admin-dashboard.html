@@ -121,7 +121,11 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">{{ issue.upvotes
                             }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm flex items-center gap-2">
+                            <button (click)="openModal(issue)"
+                                class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1 rounded text-xs font-medium transition-colors">
+                                View
+                            </button>
                             <select (change)="updateStatus(issue.id, $any($event.target).value)"
                                 class="bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-xs text-slate-900 dark:text-white">
                                 <option value="">Change Status</option>
@@ -133,6 +137,88 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Issue Details Modal -->
+    <div *ngIf="isModalOpen && selectedIssue" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" (click)="closeModal()"></div>
+
+        <!-- Modal Content -->
+        <div
+            class="relative bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Issue Details #{{ selectedIssue.id }}</h2>
+                <button (click)="closeModal()"
+                    class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 space-y-6">
+                <!-- Status Badge -->
+                <div>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium"
+                        [ngClass]="getStatusClass(selectedIssue.status)">
+                        {{ selectedIssue.status.replace('_', ' ') | titlecase }}
+                    </span>
+                    <span class="ml-3 text-sm text-slate-500 dark:text-slate-400">
+                        Upvotes: {{ selectedIssue.upvotes }}
+                    </span>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Description</h3>
+                    <p class="text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg">
+                        {{ selectedIssue.description }}
+                    </p>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Location</h3>
+                    <div class="flex items-center gap-2 text-slate-900 dark:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-slate-400">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        {{ selectedIssue.location }}
+                    </div>
+                </div>
+
+                <!-- Image -->
+                <div *ngIf="selectedIssue.image_url">
+                    <h3 class="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Attached Image</h3>
+                    <div
+                        class="relative rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                        <img [src]="'http://localhost:8000' + selectedIssue.image_url" alt="Issue Image"
+                            class="w-full h-auto object-contain max-h-[400px]">
+                    </div>
+                </div>
+                <div *ngIf="!selectedIssue.image_url"
+                    class="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg text-center text-slate-500 text-sm">
+                    No image attached
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div
+                class="p-6 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 bg-slate-50 dark:bg-slate-900/30">
+                <button (click)="closeModal()"
+                    class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors font-medium">
+                    Close
+                </button>
+            </div>
         </div>
     </div>
 </div>
