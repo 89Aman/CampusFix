@@ -10,17 +10,17 @@ export const routes: Routes = [
         path: '',
         component: LayoutComponent,
         children: [
-            { path: '', redirectTo: 'login', pathMatch: 'full' },
+            { path: '', redirectTo: 'student/list', pathMatch: 'full' },
             { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) },
             {
                 path: 'student/submit',
-                component: StudentSubmitComponent,
-                canActivate: [authGuard]
+                component: StudentSubmitComponent
+                // No auth guard - guests can submit anonymously
             },
             {
                 path: 'student/list',
-                component: StudentList,
-                canActivate: [authGuard]
+                component: StudentList
+                // No auth guard - anyone can view issues
             },
             {
                 path: 'admin/dashboard',
