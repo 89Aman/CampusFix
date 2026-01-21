@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
-import { switchMap, map, of } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+import { of, Observable } from 'rxjs';
 
 @Component({
     selector: 'app-layout',
@@ -13,13 +14,17 @@ import { switchMap, map, of } from 'rxjs';
 })
 export class LayoutComponent implements OnInit {
     isDarkMode = true;
-    user$ = this.authService.currentUser$;
-    isAdmin$ = this.authService.currentUser$.pipe(
-        switchMap(user => user ? this.authService.isAdmin() : of({ is_admin: false })),
-        map(response => response.is_admin)
-    );
+    user$!: Observable<any>;
+    isAdmin$!: Observable<boolean>;
 
-    constructor(private authService: AuthService, private router: Router) { }
+    constructor(private authService: AuthService, private router: Router) {
+        // Initialize observables in constructor after authService is injected
+        this.user$ = this.authService.currentUser$;
+        this.isAdmin$ = this.authService.currentUser$.pipe(
+            switchMap(user => user ? this.authService.isAdmin() : of({ is_admin: false })),
+            map(response => response.is_admin)
+        );
+    }
 
     ngOnInit() {
         if (this.isDarkMode) {
