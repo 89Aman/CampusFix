@@ -187,6 +187,16 @@ async def create_issue(
 
         image_url = None
         if image:
+            # Delete all files in the uploads directory before saving new file
+            uploads_dir = "static/uploads"
+            try:
+                for existing_file in os.listdir(uploads_dir):
+                    existing_file_path = os.path.join(uploads_dir, existing_file)
+                    if os.path.isfile(existing_file_path):
+                        os.remove(existing_file_path)
+            except OSError:
+                pass  # Continue even if cleanup fails
+
             file_extension = os.path.splitext(image.filename)[1]
             filename = f"{datetime.now().timestamp()}{file_extension}"
             file_path = f"static/uploads/{filename}"
