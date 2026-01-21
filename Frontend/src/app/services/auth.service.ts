@@ -18,15 +18,21 @@ export class AuthService {
     currentUser$ = this.currentUserSubject.asObservable();
 
     constructor(private http: HttpClient) {
+        console.log('AuthService: Constructor called, loading session...');
         this.loadSession();
     }
 
     private loadSession() {
+        console.log('AuthService: Calling /auth/me...');
         this.http.get<User | null>(`${this.apiUrl}/me`).subscribe({
             next: (user) => {
+                console.log('AuthService: Session loaded, user:', user);
                 this.currentUserSubject.next(user);
             },
-            error: () => this.currentUserSubject.next(null)
+            error: (err) => {
+                console.error('AuthService: Session load failed:', err);
+                this.currentUserSubject.next(null);
+            }
         });
     }
 

@@ -18,12 +18,15 @@ export class LayoutComponent implements OnInit {
     isAdmin$!: Observable<boolean>;
 
     constructor(private authService: AuthService, private router: Router) {
+        console.log('LayoutComponent: Constructor called');
         // Initialize observables in constructor after authService is injected
         this.user$ = this.authService.currentUser$;
+        console.log('LayoutComponent: user$ initialized');
         this.isAdmin$ = this.authService.currentUser$.pipe(
             switchMap(user => user ? this.authService.isAdmin() : of({ is_admin: false })),
             map(response => response.is_admin)
         );
+        console.log('LayoutComponent: isAdmin$ initialized');
     }
 
     ngOnInit() {
