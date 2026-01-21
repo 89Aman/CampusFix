@@ -77,9 +77,35 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ issues, onSu
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Photo Evidence</label>
-                        <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group">
-                            <Camera className="mx-auto h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
-                            <span className="text-sm text-gray-500 dark:text-gray-400">Click to add photo</span>
+                        {/* Photo Evidence */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Photo Evidence</label>
+                            <div
+                                onClick={() => document.getElementById('file-upload')?.click()}
+                                className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer group relative"
+                            >
+                                {imageFile ? (
+                                    <div className="text-sm text-green-600 font-medium">
+                                        Selected: {imageFile.name}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <Camera className="mx-auto h-8 w-8 text-gray-400 group-hover:text-blue-500 mb-2" />
+                                        <span className="text-sm text-gray-500 dark:text-gray-400">Click to add photo</span>
+                                    </>
+                                )}
+                                <input
+                                    id="file-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setImageFile(e.target.files[0]);
+                                        }
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
 
