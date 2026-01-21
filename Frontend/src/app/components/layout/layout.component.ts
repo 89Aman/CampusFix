@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { switchMap, map, of } from 'rxjs';
 
 @Component({
     selector: 'app-layout',
@@ -12,11 +13,13 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LayoutComponent implements OnInit {
     isDarkMode = true;
-    user$;
+    user$ = this.authService.currentUser$;
+    isAdmin$ = this.authService.currentUser$.pipe(
+        switchMap(user => user ? this.authService.isAdmin() : of({ is_admin: false })),
+        map(response => response.is_admin)
+    );
 
-    constructor(private authService: AuthService) {
-        this.user$ = this.authService.currentUser$;
-    }
+    constructor(private authService: AuthService, private router: Router) { }
 
     ngOnInit() {
         if (this.isDarkMode) {
@@ -35,5 +38,6 @@ export class LayoutComponent implements OnInit {
 
     logout() {
         this.authService.logout();
+        this.router.navigate(['/login']);
     }
 }

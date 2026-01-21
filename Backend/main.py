@@ -93,6 +93,16 @@ def get_current_user(request: Request):
     return request.session.get('user')
 
 
+# Helper to check if user is admin
+def is_admin(user: dict) -> bool:
+    if not user or 'email' not in user:
+        return False
+    admin_emails = os.getenv("ADMIN_EMAILS", "").split(",")
+    admin_emails = [email.strip().lower() for email in admin_emails if email.strip()]
+    user_email = user.get('email', '').lower()
+    return user_email in admin_emails
+
+
 # Auth endpoints
 @app.get("/auth/login/google")
 async def login_google(request: Request):
@@ -134,6 +144,12 @@ async def auth_github(request: Request):
 async def get_me(request: Request):
     user = get_current_user(request)
     return user
+
+
+@app.get("/auth/is_admin")
+async def check_is_admin(request: Request):
+    user = get_current_user(request)
+    return {"is_admin": is_admin(user)}
 
 
 @app.get("/auth/logout")

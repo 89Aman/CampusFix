@@ -21,8 +21,9 @@
                 Report Issue
             </a>
 
-            <!-- Admin Dashboard - For Logged In Users -->
-            <a *ngIf="user$ | async" routerLink="/admin/dashboard" routerLinkActive="text-blue-600 dark:text-blue-400"
+            <!-- Admin Dashboard - For Admins Only -->
+            <a *ngIf="isAdmin$ | async" routerLink="/admin/dashboard"
+                routerLinkActive="text-blue-600 dark:text-blue-400"
                 class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                 Admin
             </a>

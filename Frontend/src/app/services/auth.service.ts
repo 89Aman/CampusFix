@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface User {
     sub: string;
@@ -18,10 +18,10 @@ export class AuthService {
     currentUser$ = this.currentUserSubject.asObservable();
 
     constructor(private http: HttpClient) {
-        this.checkSession();
+        this.loadSession();
     }
 
-    checkSession() {
+    private loadSession() {
         this.http.get<User | null>(`${this.apiUrl}/me`).subscribe({
             next: (user) => {
                 this.currentUserSubject.next(user);
@@ -36,6 +36,14 @@ export class AuthService {
 
     loginWithGithub() {
         window.location.href = `${this.apiUrl}/login/github`;
+    }
+
+    checkSession(): Observable<User | null> {
+        return this.http.get<User | null>(`${this.apiUrl}/me`);
+    }
+
+    isAdmin(): Observable<{ is_admin: boolean }> {
+        return this.http.get<{ is_admin: boolean }>(`${this.apiUrl}/is_admin`);
     }
 
     logout() {
