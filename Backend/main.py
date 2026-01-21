@@ -168,7 +168,9 @@ async def create_issue(
         db: Session = Depends(get_db)
 ):
     user = get_current_user(request)
-    user_id = user.get('sub') if user else None
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    user_id = user.get('sub')
 
     image_url = None
     if image:

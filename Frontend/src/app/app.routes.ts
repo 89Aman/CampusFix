@@ -14,8 +14,8 @@ export const routes: Routes = [
             { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) },
             {
                 path: 'student/submit',
-                component: StudentSubmitComponent
-                // No auth guard - guests can submit anonymously
+                component: StudentSubmitComponent,
+                canActivate: [authGuard]
             },
             {
                 path: 'student/list',
