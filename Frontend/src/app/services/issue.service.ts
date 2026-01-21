@@ -11,6 +11,8 @@ export interface Issue {
     upvotes: number;
     created_at: string;
     user_id?: string;
+    reporter_name?: string;
+    reporter_email?: string;
 }
 
 @Injectable({

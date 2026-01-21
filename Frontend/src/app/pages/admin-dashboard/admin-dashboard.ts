@@ -109,6 +109,21 @@ export class AdminDashboard implements OnInit {
         }
     }
 
+    getPriority(upvotes: number): string {
+        if (upvotes >= 10) return 'High';
+        if (upvotes >= 5) return 'Medium';
+        return 'Low';
+    }
+
+    getPriorityClass(priority: string): string {
+        switch (priority) {
+            case 'High': return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+            case 'Medium': return 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300';
+            case 'Low': return 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400';
+            default: return '';
+        }
+    }
+
     openModal(issue: Issue) {
         this.selectedIssue = issue;
         this.isModalOpen = true;

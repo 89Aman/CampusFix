@@ -24,6 +24,8 @@ class Issue(Base):
     upvotes = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
     user_id = Column(String, nullable=True)
+    reporter_name = Column(String, nullable=True)
+    reporter_email = Column(String, nullable=True)
 
 
 def get_db():

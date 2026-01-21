@@ -80,6 +80,8 @@ class IssueResponse(BaseModel):
     upvotes: int
     created_at: datetime
     user_id: Optional[str]
+    reporter_name: Optional[str]
+    reporter_email: Optional[str]
 
     model_config = {"from_attributes": True}
 
@@ -187,7 +189,9 @@ async def create_issue(
         description=description,
         location=location,
         image_url=image_url,
-        user_id=user_id
+        user_id=user_id,
+        reporter_name=user.get('name'),
+        reporter_email=user.get('email')
     )
     db.add(issue)
     db.commit()
