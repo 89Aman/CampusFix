@@ -5,7 +5,7 @@ import { IssueCard } from '../components/IssueCard';
 
 interface StudentDashboardProps {
     issues: Issue[];
-    onSubmitIssue: (data: Partial<Issue>) => Promise<void>;
+    onSubmitIssue: (data: Partial<Issue>, imageFile?: File | null) => Promise<void>;
     onIssueClick: (issue: Issue) => void;
 }
 
@@ -18,6 +18,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ issues, onSu
     const [summary, setSummary] = useState('');
     const [location, setLocation] = useState('Block A / Room 201');
     const [desc, setDesc] = useState('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,12 +34,13 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({ issues, onSu
             category: "Other", // Default for now
             severity: "medium", // Default
             image: null
-        });
+        }, imageFile);
 
         setLoading(false);
         setSuccess(true);
         setSummary('');
         setDesc('');
+        setImageFile(null);
 
         // Hide success after 3s
         setTimeout(() => setSuccess(false), 3000);

@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, sta
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 import models
 import database
@@ -10,19 +11,63 @@ import os
 import uuid
 import random
 from datetime import datetime
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
+from authlib.integrations.starlette_client import OAuth
+from dotenv import load_dotenv
+import pathlib
+
+# Load env vars from .env file in the same directory
+env_path = pathlib.Path(__file__).parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Database init
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="CampusFix Backend")
 
+# Helper for loading env vars safely
+def get_env(key):
+    return os.getenv(key, "MISSING_ENV_VAR")
+
+# Session Middleware (Required for OAuth)
+app.add_middleware(SessionMiddleware, secret_key=get_env("SECRET_KEY") or "super-secret-key")
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all for development
+    allow_origins=["http://localhost:4200"], # Client URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# OAuth Setup
+oauth = OAuth()
+
+# 1. Google
+oauth.register(
+    name='google',
+    client_id=get_env("GOOGLE_CLIENT_ID"),
+    client_secret=get_env("GOOGLE_CLIENT_SECRET"),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
+)
+
+# 2. GitHub
+oauth.register(
+    name='github',
+    client_id=get_env("GITHUB_CLIENT_ID"),
+    client_secret=get_env("GITHUB_CLIENT_SECRET"),
+    access_token_url='https://github.com/login/oauth/access_token',
+    access_token_params=None,
+    authorize_url='https://github.com/login/oauth/authorize',
+    authorize_params=None,
+    api_base_url='https://api.github.com/',
+    client_kwargs={'scope': 'user:email'},
 )
 
 # Static files for images
@@ -75,16 +120,62 @@ def mock_ai_analysis(text: str):
 
 # API Endpoints
 
-@app.post("/auth/anonymous")
-def anonymous_login():
-    """Generates an anonymous session ID"""
-    return {"token": str(uuid.uuid4())}
+# --- AUTH ENDPOINTS ---
+
+@app.get("/auth/login/{provider}")
+async def login(provider: str, request: Request):
+    redirect_uri = request.url_for('auth_callback', provider=provider)
+    return await oauth.create_client(provider).authorize_redirect(request, redirect_uri)
+
+@app.get("/auth/callback/{provider}")
+async def auth_callback(provider: str, request: Request):
+    token = await oauth.create_client(provider).authorize_access_token(request)
+    
+    user_info = None
+    if provider == 'google':
+        user_info = token.get('userinfo')
+        # Google returns 'sub', 'name', 'email', 'picture'
+    elif provider == 'github':
+        resp = await oauth.create_client(provider).get('user', token=token)
+        user_info = resp.json()
+        # Github returns 'id', 'name', 'login', 'avatar_url'
+        user_info['picture'] = user_info.get('avatar_url')
+        user_info['sub'] = str(user_info.get('id'))
+
+    # Store user in session
+    if user_info:
+        request.session['user'] = dict(user_info)
+    
+    return RedirectResponse(url='http://localhost:4200')
+
+@app.get("/auth/logout")
+async def logout(request: Request):
+    request.session.pop('user', None)
+    return {"message": "Logged out"}
+
+@app.get("/auth/me")
+async def get_current_user(request: Request):
+    user = request.session.get('user')
+    if user:
+        return user
+    return None # Return null if not logged in
+
+# Dependency to protect routes
+def require_login(request: Request):
+    user = request.session.get('user')
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+        )
+    return user
 
 @app.post("/issues", response_model=models.IssueOut)
 def create_issue(
     description: str = Form(...),
     location: str = Form(...),
     image: Optional[UploadFile] = File(None),
+    user: dict = Depends(require_login),
     db: Session = Depends(get_db)
 ):
     # Handle Image Upload
@@ -121,6 +212,7 @@ def list_issues(
     skip: int = 0, 
     limit: int = 100, 
     sort_by: str = "priority", # priority, newest
+    user: dict = Depends(require_login),
     db: Session = Depends(get_db)
 ):
     query = db.query(models.Issue)
@@ -133,7 +225,7 @@ def list_issues(
     return query.offset(skip).limit(limit).all()
 
 @app.post("/issues/{issue_id}/upvote")
-def upvote_issue(issue_id: int, db: Session = Depends(get_db)):
+def upvote_issue(issue_id: int, user: dict = Depends(require_login), db: Session = Depends(get_db)):
     issue = db.query(models.Issue).filter(models.Issue.id == issue_id).first()
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
@@ -149,6 +241,7 @@ def upvote_issue(issue_id: int, db: Session = Depends(get_db)):
 def update_status(
     issue_id: int, 
     status_update: models.IssueUpdateStatus,
+    user: dict = Depends(require_login),
     db: Session = Depends(get_db)
 ):
     issue = db.query(models.Issue).filter(models.Issue.id == issue_id).first()
@@ -163,7 +256,7 @@ def update_status(
     return {"message": "Status updated", "status": issue.status}
 
 @app.get("/analytics")
-def get_analytics(db: Session = Depends(get_db)):
+def get_analytics(user: dict = Depends(require_login), db: Session = Depends(get_db)):
     total_issues = db.query(models.Issue).count()
     resolved_issues = db.query(models.Issue).filter(models.Issue.status == models.IssueStatus.RESOLVED).count()
     
@@ -177,7 +270,7 @@ def get_analytics(db: Session = Depends(get_db)):
     }
 
 @app.get("/heatmap")
-def get_heatmap_data(db: Session = Depends(get_db)):
+def get_heatmap_data(user: dict = Depends(require_login), db: Session = Depends(get_db)):
     # Returns simplified location data
     issues = db.query(models.Issue).all()
     # Assuming location is a string, for a real heatmap we'd need to parse it or have lat/long fields.
@@ -186,4 +279,4 @@ def get_heatmap_data(db: Session = Depends(get_db)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, port=8000)

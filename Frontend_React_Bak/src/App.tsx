@@ -7,37 +7,7 @@ import { StudentDashboard } from './pages/StudentDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { IssueDetailModal } from './components/IssueDetailModal';
 
-// Mock Data
-const INITIAL_ISSUES: Issue[] = [
-  {
-    id: 1,
-    summary: "Broken water pipe in bathroom",
-    location: "Block A / Room 201",
-    category: "Plumbing",
-    severity: "high",
-    status: "Open",
-    priority: 95,
-    text: "The water pipe in the bathroom sink is leaking water constantly. Creates a puddle on the floor.",
-    upvotes: 3,
-    image: "https://images.unsplash.com/photo-1585258380295-d8515320e4b8?auto=format&fit=crop&q=80&w=300",
-    timeline: ["Reported by User • Jan 20, 2026"],
-    createdAt: "2026-01-20"
-  },
-  {
-    id: 2,
-    summary: "Flickering lights in hallway",
-    location: "Block B / Hallway 3",
-    category: "Electrical",
-    severity: "medium",
-    status: "In Progress",
-    priority: 72,
-    text: "The lights in hallway 3 are flickering on and off. It is very distracting and potentially dangerous.",
-    upvotes: 5,
-    image: null,
-    timeline: ["Reported by User • Jan 21, 2026", "Technician assigned • Jan 21, 2026"],
-    createdAt: "2026-01-21"
-  }
-];
+import { getIssues, submitIssue, upvoteIssue } from './api';
 
 function App() {
   const [userRole, setUserRole] = useState<UserRole>('student');
@@ -46,7 +16,21 @@ function App() {
   const [isDark, setIsDark] = useState(false);
 
   // Data State
-  const [issues, setIssues] = useState<Issue[]>(INITIAL_ISSUES);
+  const [issues, setIssues] = useState<Issue[]>([]);
+
+  // Fetch issues on mount
+  useEffect(() => {
+    loadIssues();
+  }, []);
+
+  const loadIssues = async () => {
+    try {
+      const data = await getIssues();
+      setIssues(data);
+    } catch (error) {
+      console.error("Failed to load issues", error);
+    }
+  };
 
   // Modal State
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
@@ -66,22 +50,39 @@ function App() {
     setIsSidebarOpen(false); // Close sidebar on switch
   };
 
-  const handleIssueSubmit = async (data: Partial<Issue>) => {
-    const newIssue: Issue = {
-      id: issues.length + 1,
-      summary: data.summary || "Untitled Issue",
-      location: data.location || "Unknown",
-      category: data.category || "Other",
-      severity: data.severity || "low",
-      status: "Open",
-      priority: 0,
-      text: data.text || "",
-      upvotes: 0,
-      image: null,
-      timeline: [`Reported • ${new Date().toLocaleDateString()}`],
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    setIssues([newIssue, ...issues]);
+  const handleIssueSubmit = async (data: Partial<Issue>, imageFile?: File | null) => {
+    try {
+      const formData = new FormData();
+      formData.append('description', data.text || "");
+      formData.append('location', data.location || "");
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
+      await submitIssue(formData);
+      // Refresh list
+      await loadIssues();
+    } catch (error) {
+      console.error("Failed to submit issue", error);
+    }
+  };
+
+  const handleUpvote = async (id: number) => {
+    try {
+      await upvoteIssue(id);
+      const updatedIssues = issues.map(issue => {
+        if (issue.id === id) {
+          return { ...issue, upvotes: issue.upvotes + 1 };
+        }
+        return issue;
+      });
+      setIssues(updatedIssues);
+      if (selectedIssue && selectedIssue.id === id) {
+        setSelectedIssue({ ...selectedIssue, upvotes: selectedIssue.upvotes + 1 });
+      }
+    } catch (error) {
+      console.error("Failed to upvote", error);
+    }
   };
 
   const openIssue = (issue: Issue) => {
@@ -126,6 +127,7 @@ function App() {
         issue={selectedIssue}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onUpvote={handleUpvote}
       />
     </Layout>
   );

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Issue } from './types';
+import type { Issue } from './types';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -17,7 +17,8 @@ export const getIssues = async (sortBy: string = 'priority'): Promise<Issue[]> =
         ...item,
         text: item.description, // Map description to text
         image: item.image_url ? `${API_BASE_URL}${item.image_url}` : null,
-        priority: item.priority_score
+        priority: item.priority_score,
+        timeline: [`Created at ${new Date(item.created_at).toLocaleDateString()}`]
     }));
 };
 

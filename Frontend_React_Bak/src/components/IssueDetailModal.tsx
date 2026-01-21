@@ -6,9 +6,10 @@ interface IssueDetailModalProps {
     issue: Issue | null;
     isOpen: boolean;
     onClose: () => void;
+    onUpvote: (id: number) => void;
 }
 
-export const IssueDetailModal: React.FC<IssueDetailModalProps> = ({ issue, isOpen, onClose }) => {
+export const IssueDetailModal: React.FC<IssueDetailModalProps> = ({ issue, isOpen, onClose, onUpvote }) => {
     if (!isOpen || !issue) return null;
 
     return (
@@ -65,9 +66,12 @@ export const IssueDetailModal: React.FC<IssueDetailModalProps> = ({ issue, isOpe
                         <div className="flex items-center gap-1">
                             <Clock size={14} /> Reported on {issue.createdAt}
                         </div>
-                        <div className="flex items-center gap-1 font-medium text-blue-600">
+                        <button
+                            onClick={() => onUpvote(issue.id)}
+                            className="flex items-center gap-1 font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                        >
                             <ThumbsUp size={14} /> {issue.upvotes} Upvotes
-                        </div>
+                        </button>
                     </div>
 
                     <div className="space-y-2 mt-4">
