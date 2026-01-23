@@ -8,15 +8,15 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <!-- View Issues - Public -->
-            <a routerLink="/student/list" routerLinkActive="text-blue-600 dark:text-blue-400"
+            <!-- View Issues - Only for logged in users -->
+            <a *ngIf="user$ | async" routerLink="/student/list" routerLinkActive="text-blue-600 dark:text-blue-400"
                 [routerLinkActiveOptions]="{exact: false}"
                 class="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors">
                 View Issues
             </a>
 
-            <!-- Report Issue - Protected (redirects to login if guest) -->
-            <a routerLink="/student/submit" routerLinkActive="bg-blue-700"
+            <!-- Report Issue - Only for logged in users -->
+            <a *ngIf="user$ | async" routerLink="/student/submit" routerLinkActive="bg-blue-700"
                 class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-sm">
                 Report Issue
             </a>

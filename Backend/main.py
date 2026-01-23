@@ -216,13 +216,17 @@ async def create_issue(
 
 
 @app.get("/issues", response_model=list[IssueResponse])
-def get_issues(db: Session = Depends(get_db)):
+async def get_issues(request: Request, db: Session = Depends(get_db)):
+    if not get_current_user(request):
+        raise HTTPException(status_code=401, detail="Authentication required")
     issues = db.query(Issue).order_by(Issue.created_at.desc()).all()
     return issues
 
 
 @app.post("/issues/{issue_id}/upvote")
-def upvote_issue(issue_id: int, db: Session = Depends(get_db)):
+async def upvote_issue(request: Request, issue_id: int, db: Session = Depends(get_db)):
+    if not get_current_user(request):
+        raise HTTPException(status_code=401, detail="Authentication required")
     issue = db.query(Issue).filter(Issue.id == issue_id).first()
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
@@ -242,7 +246,9 @@ def update_status(issue_id: int, status_update: StatusUpdate, db: Session = Depe
 
 
 @app.get("/analytics")
-def get_analytics(db: Session = Depends(get_db)):
+async def get_analytics(request: Request, db: Session = Depends(get_db)):
+    if not get_current_user(request):
+        raise HTTPException(status_code=401, detail="Authentication required")
     total = db.query(Issue).count()
     pending = db.query(Issue).filter(Issue.status == "pending").count()
     in_progress = db.query(Issue).filter(Issue.status == "in_progress").count()
