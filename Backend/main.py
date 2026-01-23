@@ -32,7 +32,10 @@ app.add_middleware(
         "http://localhost:4200",
         "http://127.0.0.1:4200",
         "http://localhost:56662",  # Alternative dev server port
-        "http://localhost:*"  # Allow any localhost port
+        "http://localhost:5000",   # Flutter Web
+        "http://localhost:5001",   # Flutter Web (Alternative)
+        "http://localhost:5005",   # Flutter Web (Current)
+        "http://localhost:*"       # Allow any localhost port (General Dev)
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -82,6 +85,7 @@ class IssueResponse(BaseModel):
     user_id: Optional[str]
     reporter_name: Optional[str]
     reporter_email: Optional[str]
+    priority: str = "medium"
 
     model_config = {"from_attributes": True}
 
@@ -118,7 +122,7 @@ async def auth_google(request: Request):
     user = token.get('userinfo')
     if user:
         request.session['user'] = dict(user)
-    return RedirectResponse(url='http://localhost:4200/student/submit')
+    return RedirectResponse(url='http://localhost:5005/#/issues')
 
 
 @app.get("/auth/login/github")
@@ -139,7 +143,7 @@ async def auth_github(request: Request):
             'email': user.get('email'),
             'picture': user['avatar_url']
         }
-    return RedirectResponse(url='http://localhost:4200/student/submit')
+    return RedirectResponse(url='http://localhost:5005/#/issues')
 
 
 @app.get("/auth/me")

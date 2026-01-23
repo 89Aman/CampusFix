@@ -26,6 +26,7 @@ class Issue(Base):
     user_id = Column(String, nullable=True)
     reporter_name = Column(String, nullable=True)
     reporter_email = Column(String, nullable=True)
+    priority = Column(String, default="medium") # high, medium, low
 
 
 def get_db():
