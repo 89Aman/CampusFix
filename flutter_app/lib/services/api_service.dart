@@ -18,17 +18,7 @@ class ApiService {
   
   // Dynamic Base URL based on platform
   String get baseUrl {
-<<<<<<< HEAD
-    if (kIsWeb) {
-      return 'http://localhost:8000';
-    } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000';
-    } else {
-      return 'http://localhost:8000'; // iOS/Desktop
-    }
-=======
     return 'https://campusfix-backend-1cc0.onrender.com';
->>>>>>> feature/supabase-storage
   }
 
   Future<Map<String, String>> _getHeaders() async {

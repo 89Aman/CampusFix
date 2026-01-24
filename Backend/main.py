@@ -47,18 +47,15 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:4200",
         "http://127.0.0.1:4200",
-<<<<<<< HEAD
-        "http://localhost:56662",  # Alternative dev server port
-        "http://localhost:5000",   # Flutter Web
-        "http://localhost:5001",   # Flutter Web (Alternative)
-        "http://localhost:5005",   # Flutter Web (Current)
-        "http://localhost:*"       # Allow any localhost port (General Dev)
-=======
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
         "http://localhost:56662",
+        "http://localhost:5000",
+        "http://localhost:5001",
         "http://localhost:5005",
-        "http://127.0.0.1:5005", 
-        "http://localhost:*" 
->>>>>>> feature/supabase-storage
+        "http://127.0.0.1:5005",
+        "http://localhost:*",
+        "https://campusfix-backend-1cc0.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -136,7 +133,10 @@ def is_admin(user: dict) -> bool:
 # Auth endpoints
 @app.get("/auth/login/google")
 async def login_google(request: Request):
-    redirect_uri = request.url_for('auth_google')
+    redirect_uri = str(request.url_for('auth_google'))
+    # Force HTTPS in production (Render)
+    if "onrender.com" in redirect_uri and redirect_uri.startswith("http://"):
+        redirect_uri = redirect_uri.replace("http://", "https://")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
@@ -151,7 +151,10 @@ async def auth_google(request: Request):
 
 @app.get("/auth/login/github")
 async def login_github(request: Request):
-    redirect_uri = request.url_for('auth_github')
+    redirect_uri = str(request.url_for('auth_github'))
+    # Force HTTPS in production (Render)
+    if "onrender.com" in redirect_uri and redirect_uri.startswith("http://"):
+        redirect_uri = redirect_uri.replace("http://", "https://")
     return await oauth.github.authorize_redirect(request, redirect_uri)
 
 

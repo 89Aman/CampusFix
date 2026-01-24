@@ -13,16 +13,17 @@ class LoginScreen extends StatelessWidget {
     final urlString = '$baseUrl/auth/login/$provider';
     final Uri url = Uri.parse(urlString);
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(
-        url, 
-        mode: LaunchMode.platformDefault,
-        webOnlyWindowName: '_self',
-      );
-    } else {
+    try {
+      if (!await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      )) {
+        throw Exception('Could not launch $url');
+      }
+    } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch auth provider')),
+          SnackBar(content: Text('Could not launch auth provider: $e')),
         );
       }
     }
