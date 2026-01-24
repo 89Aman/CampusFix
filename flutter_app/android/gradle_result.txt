@@ -1,0 +1,385 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/Asus/.gradle/wrapper/dists/gradle-8.14-all/c2qonpi39x1mddn7hk5gh9iqj/gradle-8.14/lib/native-platform-0.22-milestone-28.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Starting a Gradle Daemon, 1 busy and 3 incompatible and 2 stopped Daemons could not be reused, use --status for details
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 36
+
+This Android Gradle plugin (8.7.3) was tested up to compileSdk = 35.
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 36.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 36 is available.
+
+For more information refer to the compatibility table:
+https://d.android.com/r/tools/api-level-support
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=36
+to this project's gradle.properties.
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 36
+
+This Android Gradle plugin (8.7.3) was tested up to compileSdk = 35.
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 36.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 36 is available.
+
+For more information refer to the compatibility table:
+https://d.android.com/r/tools/api-level-support
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=36
+to this project's gradle.properties.
+Checking the license for package Android SDK Build-Tools 34 in C:\Users\Asus\AppData\Local\Android\sdk\licenses
+License for package Android SDK Build-Tools 34 accepted.
+Preparing "Install Android SDK Build-Tools 34 v.34.0.0".
+"Install Android SDK Build-Tools 34 v.34.0.0" ready.
+Installing Android SDK Build-Tools 34 in C:\Users\Asus\AppData\Local\Android\sdk\build-tools\34.0.0
+"Install Android SDK Build-Tools 34 v.34.0.0" complete.
+"Install Android SDK Build-Tools 34 v.34.0.0" finished.
+> Task :app:ReleaseMinSdkCheck
+> Task :app:buildKotlinToolingMetadata
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+
+> Task :app:compileFlutterBuildRelease
+lib/screens/issue_list_screen.dart:350:1: Error: The '===' operator is not supported.
+=======
+^
+lib/screens/issue_list_screen.dart:350:4: Error: The '===' operator is not supported.
+=======
+   ^
+lib/screens/admin_dashboard_screen.dart:241:1: Error: The '===' operator is not supported.
+=======
+^
+lib/screens/admin_dashboard_screen.dart:241:4: Error: The '===' operator is not supported.
+=======
+   ^
+lib/screens/admin_issue_detail_screen.dart:228:1: Error: The '===' operator is not supported.
+=======
+^
+lib/screens/admin_issue_detail_screen.dart:228:4: Error: The '===' operator is not supported.
+=======
+   ^
+lib/screens/issue_list_screen.dart:343:1: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+^^
+lib/screens/issue_list_screen.dart:343:3: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+  ^^
+lib/screens/issue_list_screen.dart:343:5: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+    ^^
+lib/screens/issue_list_screen.dart:343:9: Error: 'HEAD' isn't a type.
+<<<<<<< HEAD
+        ^^^^
+lib/screens/issue_list_screen.dart:344:5: Error: Expected ',' before this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/issue_list_screen.dart:344:5: Error: Expected '>' after this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/issue_list_screen.dart:344:12: Error: Expected '[' before this.
+    String baseUrl = 'http://localhost:8000';
+           ^^^^^^^
+lib/screens/issue_list_screen.dart:344:12: Error: List literal requires exactly one type argument.
+    String baseUrl = 'http://localhost:8000';
+           ^
+lib/screens/issue_list_screen.dart:344:5: Error: Expected ';' after this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/issue_list_screen.dart:350:1: Error: Expected an identifier, but got '==='.
+Try inserting an identifier before '==='.
+=======
+^^^
+lib/screens/issue_list_screen.dart:350:7: Error: Expected an identifier, but got '='.
+Try inserting an identifier before '='.
+=======
+      ^
+lib/screens/issue_list_screen.dart:350:4: Error: The string '===' isn't a user-definable operator.
+=======
+   ^^^
+lib/screens/issue_list_screen.dart:351:5: Error: Expected ';' after this.
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+    ^^^^^^
+lib/screens/issue_list_screen.dart:352:1: Error: Expected an identifier, but got '>>>'.
+Try inserting an identifier before '>>>'.
+>>>>>>> feature/supabase-storage
+^^^
+lib/screens/issue_list_screen.dart:352:4: Error: Expected an identifier, but got '>>>'.
+Try inserting an identifier before '>>>'.
+>>>>>>> feature/supabase-storage
+   ^^^
+lib/screens/issue_list_screen.dart:352:7: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+>>>>>>> feature/supabase-storage
+      ^
+lib/screens/issue_list_screen.dart:352:26: Error: Expected ';' after this.
+>>>>>>> feature/supabase-storage
+                         ^^^^^^^
+lib/screens/issue_list_screen.dart:344:12: Error: The setter 'baseUrl' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+    String baseUrl = 'http://localhost:8000';
+           ^^^^^^^
+lib/screens/issue_list_screen.dart:347:9: Error: The setter 'baseUrl' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+        baseUrl = 'http://10.0.2.2:8000';
+        ^^^^^^^
+lib/screens/issue_list_screen.dart:351:12: Error: The setter 'baseUrl' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+           ^^^^^^^
+lib/screens/issue_list_screen.dart:352:9: Error: The getter 'feature' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'feature'.
+>>>>>>> feature/supabase-storage
+        ^^^^^^^
+lib/screens/issue_list_screen.dart:352:17: Error: The getter 'supabase' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'supabase'.
+>>>>>>> feature/supabase-storage
+                ^^^^^^^^
+lib/screens/issue_list_screen.dart:352:26: Error: The getter 'storage' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'storage'.
+>>>>>>> feature/supabase-storage
+                         ^^^^^^^
+lib/screens/issue_list_screen.dart:353:14: Error: The getter 'baseUrl' isn't defined for the type 'IssueCard'.
+ - 'IssueCard' is from 'package:flutter_app/screens/issue_list_screen.dart' ('lib/screens/issue_list_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'baseUrl'.
+    return '$baseUrl$path';
+             ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:234:1: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+^^
+lib/screens/admin_dashboard_screen.dart:234:3: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+  ^^
+lib/screens/admin_dashboard_screen.dart:234:5: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+    ^^
+lib/screens/admin_dashboard_screen.dart:234:9: Error: 'HEAD' isn't a type.
+<<<<<<< HEAD
+        ^^^^
+lib/screens/admin_dashboard_screen.dart:235:5: Error: Expected ',' before this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/admin_dashboard_screen.dart:235:5: Error: Expected '>' after this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/admin_dashboard_screen.dart:235:12: Error: Expected '[' before this.
+    String baseUrl = 'http://localhost:8000';
+           ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:235:12: Error: List literal requires exactly one type argument.
+    String baseUrl = 'http://localhost:8000';
+           ^
+lib/screens/admin_dashboard_screen.dart:235:5: Error: Expected ';' after this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/admin_dashboard_screen.dart:241:1: Error: Expected an identifier, but got '==='.
+Try inserting an identifier before '==='.
+=======
+^^^
+lib/screens/admin_dashboard_screen.dart:241:7: Error: Expected an identifier, but got '='.
+Try inserting an identifier before '='.
+=======
+      ^
+lib/screens/admin_dashboard_screen.dart:241:4: Error: The string '===' isn't a user-definable operator.
+=======
+   ^^^
+lib/screens/admin_dashboard_screen.dart:242:5: Error: Expected ';' after this.
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+    ^^^^^^
+lib/screens/admin_dashboard_screen.dart:243:1: Error: Expected an identifier, but got '>>>'.
+Try inserting an identifier before '>>>'.
+>>>>>>> feature/supabase-storage
+^^^
+lib/screens/admin_dashboard_screen.dart:243:4: Error: Expected an identifier, but got '>>>'.
+Try inserting an identifier before '>>>'.
+>>>>>>> feature/supabase-storage
+   ^^^
+lib/screens/admin_dashboard_screen.dart:243:7: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+>>>>>>> feature/supabase-storage
+      ^
+lib/screens/admin_dashboard_screen.dart:243:26: Error: Expected ';' after this.
+>>>>>>> feature/supabase-storage
+                         ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:235:12: Error: The setter 'baseUrl' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+    String baseUrl = 'http://localhost:8000';
+           ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:238:9: Error: The setter 'baseUrl' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+        baseUrl = 'http://10.0.2.2:8000';
+        ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:242:12: Error: The setter 'baseUrl' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+           ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:243:9: Error: The getter 'feature' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'feature'.
+>>>>>>> feature/supabase-storage
+        ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:243:17: Error: The getter 'supabase' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'supabase'.
+>>>>>>> feature/supabase-storage
+                ^^^^^^^^
+lib/screens/admin_dashboard_screen.dart:243:26: Error: The getter 'storage' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'storage'.
+>>>>>>> feature/supabase-storage
+                         ^^^^^^^
+lib/screens/admin_dashboard_screen.dart:244:14: Error: The getter 'baseUrl' isn't defined for the type '_AdminIssueCard'.
+ - '_AdminIssueCard' is from 'package:flutter_app/screens/admin_dashboard_screen.dart' ('lib/screens/admin_dashboard_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'baseUrl'.
+    return '$baseUrl$path';
+             ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:221:1: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+^^
+lib/screens/admin_issue_detail_screen.dart:221:3: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+  ^^
+lib/screens/admin_issue_detail_screen.dart:221:5: Error: Expected an identifier, but got '<<'.
+Try inserting an identifier before '<<'.
+<<<<<<< HEAD
+    ^^
+lib/screens/admin_issue_detail_screen.dart:221:9: Error: 'HEAD' isn't a type.
+<<<<<<< HEAD
+        ^^^^
+lib/screens/admin_issue_detail_screen.dart:222:5: Error: Expected ',' before this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/admin_issue_detail_screen.dart:222:5: Error: Expected '>' after this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/admin_issue_detail_screen.dart:222:12: Error: Expected '[' before this.
+    String baseUrl = 'http://localhost:8000';
+           ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:222:12: Error: List literal requires exactly one type argument.
+    String baseUrl = 'http://localhost:8000';
+           ^
+lib/screens/admin_issue_detail_screen.dart:222:5: Error: Expected ';' after this.
+    String baseUrl = 'http://localhost:8000';
+    ^^^^^^
+lib/screens/admin_issue_detail_screen.dart:228:1: Error: Expected an identifier, but got '==='.
+Try inserting an identifier before '==='.
+=======
+^^^
+lib/screens/admin_issue_detail_screen.dart:228:7: Error: Expected an identifier, but got '='.
+Try inserting an identifier before '='.
+=======
+      ^
+lib/screens/admin_issue_detail_screen.dart:228:4: Error: The string '===' isn't a user-definable operator.
+=======
+   ^^^
+lib/screens/admin_issue_detail_screen.dart:229:5: Error: Expected ';' after this.
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+    ^^^^^^
+lib/screens/admin_issue_detail_screen.dart:230:1: Error: Expected an identifier, but got '>>>'.
+Try inserting an identifier before '>>>'.
+>>>>>>> feature/supabase-storage
+^^^
+lib/screens/admin_issue_detail_screen.dart:230:4: Error: Expected an identifier, but got '>>>'.
+Try inserting an identifier before '>>>'.
+>>>>>>> feature/supabase-storage
+   ^^^
+lib/screens/admin_issue_detail_screen.dart:230:7: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+>>>>>>> feature/supabase-storage
+      ^
+lib/screens/admin_issue_detail_screen.dart:230:26: Error: Expected ';' after this.
+>>>>>>> feature/supabase-storage
+                         ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:222:12: Error: The setter 'baseUrl' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+    String baseUrl = 'http://localhost:8000';
+           ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:225:9: Error: The setter 'baseUrl' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+        baseUrl = 'http://10.0.2.2:8000';
+        ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:229:12: Error: The setter 'baseUrl' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing setter, or defining a setter or field named 'baseUrl'.
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+           ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:230:9: Error: The getter 'feature' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'feature'.
+>>>>>>> feature/supabase-storage
+        ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:230:17: Error: The getter 'supabase' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'supabase'.
+>>>>>>> feature/supabase-storage
+                ^^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:230:26: Error: The getter 'storage' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'storage'.
+>>>>>>> feature/supabase-storage
+                         ^^^^^^^
+lib/screens/admin_issue_detail_screen.dart:231:14: Error: The getter 'baseUrl' isn't defined for the type '_AdminIssueDetailScreenState'.
+ - '_AdminIssueDetailScreenState' is from 'package:flutter_app/screens/admin_issue_detail_screen.dart' ('lib/screens/admin_issue_detail_screen.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'baseUrl'.
+    return '$baseUrl$path';
+             ^^^^^^^
+Target kernel_snapshot_program failed: Exception
+
+
+> Task :app:compileFlutterBuildRelease FAILED
+
+[Incubating] Problems report is available at: file:///C:/Users/Asus/Projects/CampusFix/flutter_app/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildRelease'.
+> Process 'command 'C:\Users\Asus\develop\flutter\bin\flutter.bat'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m 25s
+7 actionable tasks: 3 executed, 4 up-to-date
