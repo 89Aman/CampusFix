@@ -3,10 +3,19 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./campusfix.db"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./campusfix.db")
+
+connect_args = {}
+if "sqlite" in SQLALCHEMY_DATABASE_URL:
+    connect_args["check_same_thread"] = False
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args=connect_args
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

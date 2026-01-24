@@ -51,8 +51,13 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
+<<<<<<< HEAD
                     constraints: const BoxConstraints(maxWidth: 400),
                     padding: const EdgeInsets.all(40),
+=======
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    padding: const EdgeInsets.all(24),
+>>>>>>> feature/supabase-storage
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(32),
@@ -75,10 +80,17 @@ class LoginScreen extends StatelessWidget {
                         // Illustration
                         Image.asset(
                           'assets/images/login_illustration.png',
+<<<<<<< HEAD
                           width: 120,
                           height: 120,
                         ),
                         const SizedBox(height: 24),
+=======
+                          width: 80,
+                          height: 80,
+                        ),
+                        const SizedBox(height: 16),
+>>>>>>> feature/supabase-storage
                         
                         Text(
                           'Welcome to CampusFix',
@@ -100,7 +112,11 @@ class LoginScreen extends StatelessWidget {
                                 fontSize: 16,
                               ),
                         ),
+<<<<<<< HEAD
                         const SizedBox(height: 48),
+=======
+                        const SizedBox(height: 32),
+>>>>>>> feature/supabase-storage
                         
                         // Google Button
                         _SocialButton(
@@ -174,7 +190,11 @@ class _SocialButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
+<<<<<<< HEAD
       height: 56, // Taller button for modern feel
+=======
+      height: 48, // Compact button
+>>>>>>> feature/supabase-storage
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

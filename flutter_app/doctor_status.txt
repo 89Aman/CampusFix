@@ -1,0 +1,38 @@
+[√] Flutter (Channel stable, 3.38.7, on Microsoft Windows [Version 10.0.26200.7623], locale en-US) [412ms]
+    • Flutter version 3.38.7 on channel stable at C:\Users\Asus\develop\flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 3b62efc2a3 (10 days ago), 2026-01-13 13:47:42 -0800
+    • Engine revision 78fc3012e4
+    • Dart version 3.10.7
+    • DevTools version 2.51.1
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, omit-legacy-version-file, enable-lldb-debugging
+
+[√] Windows Version (Windows 11 or higher, 25H2, 2009) [893ms]
+
+[!] Android toolchain - develop for Android devices (Android SDK version 36.1.0) [367ms]
+    • Android SDK at C:\Users\Asus\AppData\Local\Android\sdk
+    • Emulator version 36.3.10.0 (build_id 14472402) (CL:N/A)
+    X cmdline-tools component is missing.
+      Try installing or updating Android Studio.
+      Alternatively, download the tools from https://developer.android.com/studio#command-line-tools-only and make sure to set the ANDROID_HOME environment variable.
+      See https://developer.android.com/studio/command-line for more details.
+    X Android license status unknown.
+      Run `flutter doctor --android-licenses` to accept the SDK licenses.
+      See https://flutter.dev/to/windows-android-setup for more details.
+
+[X] Chrome - develop for the web (Cannot find Chrome executable at .\Google\Chrome\Application\chrome.exe) [158ms]
+    ! Cannot find Chrome. Try setting CHROME_EXECUTABLE to a Chrome executable.
+
+[√] Visual Studio - develop Windows apps (Visual Studio Build Tools 2026 18.2.1) [156ms]
+    • Visual Studio at C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools
+    • Visual Studio Build Tools 2026 version 18.2.11415.280
+    • Windows 10 SDK version 10.0.26100.0
+
+[√] Connected device (2 available) [182ms]
+    • Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.26200.7623]
+    • Edge (web)        • edge    • web-javascript • Microsoft Edge 144.0.3719.82
+
+[√] Network resources [1,735ms]
+    • All expected network resources are available.
+
+! Doctor found issues in 2 categories.

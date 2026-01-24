@@ -14,7 +14,8 @@ venv/
 *.db
 static/uploads
 # Environment variables
-.env
+# .env -> Commented out to allow pushing as requested
+
 
 # OS
 .DS_Store

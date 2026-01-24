@@ -10,9 +10,25 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
 # Load environment variables
 load_dotenv()
+
+# Initialize Supabase Client
+# Initialize Supabase Client
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+
+if not supabase_url or not supabase_key:
+    print("WARNING: Supabase credentials not found in environment variables. Image uploads will fail.")
+    supabase = None
+else:
+    try:
+        supabase: Client = create_client(supabase_url, supabase_key)
+    except Exception as e:
+        print(f"ERROR: Failed to initialize Supabase client: {e}")
+        supabase = None
 
 from models import Base, Issue, engine, get_db
 from pydantic import BaseModel
@@ -31,11 +47,18 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:4200",
         "http://127.0.0.1:4200",
+<<<<<<< HEAD
         "http://localhost:56662",  # Alternative dev server port
         "http://localhost:5000",   # Flutter Web
         "http://localhost:5001",   # Flutter Web (Alternative)
         "http://localhost:5005",   # Flutter Web (Current)
         "http://localhost:*"       # Allow any localhost port (General Dev)
+=======
+        "http://localhost:56662",
+        "http://localhost:5005",
+        "http://127.0.0.1:5005", 
+        "http://localhost:*" 
+>>>>>>> feature/supabase-storage
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -64,6 +87,7 @@ oauth.register(
     authorize_params=None,
     access_token_url='https://github.com/login/oauth/access_token',
     access_token_params=None,
+    api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'user:email'},
 )
 
@@ -192,13 +216,33 @@ async def create_issue(
         image_url = None
         if image:
             file_extension = os.path.splitext(image.filename)[1]
-            filename = f"{datetime.now().timestamp()}{file_extension}"
-            file_path = f"static/uploads/{filename}"
+            filename = f"{int(datetime.now().timestamp())}_{user_id[:5]}{file_extension}"
+            
+            # Read file content
+            content = await image.read()
+            
+            # Upload to Supabase Storage
+            if not supabase:
+                 print("ERROR: Supabase client is not initialized. Skipping upload.")
+                 raise HTTPException(status_code=500, detail="Image storage service not configured.")
 
-            with open(file_path, "wb") as f:
-                content = await image.read()
-                f.write(content)
-            image_url = f"/static/uploads/{filename}"
+            try:
+                bucket_name = "issue-images"
+                res = supabase.storage.from_(bucket_name).upload(
+                    path=filename,
+                    file=content,
+                    file_options={"content-type": image.content_type}
+                )
+                
+                # Get Public URL
+                public_url_response = supabase.storage.from_(bucket_name).get_public_url(filename)
+                image_url = public_url_response
+                print(f"DEBUG: Image uploaded to Supabase: {image_url}")
+                
+            except Exception as upload_error:
+                print(f"ERROR uploading to Supabase: {upload_error}")
+                # Fallback or error handling? For now, log it.
+                # If upload fails, image_url remains None
 
         issue = Issue(
             description=description,

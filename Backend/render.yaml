@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: campusfix-backend
+    runtime: docker
+    region: singapore # Optional: chose a region or remove to let Render decide
+    plan: free # Optional: defaults to starter/standard depending on account, 'free' is explicit if available or use lowest tier manually
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+    # Health check path (optional but good practice)
+    healthCheckPath: /issues
