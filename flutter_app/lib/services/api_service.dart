@@ -18,18 +18,7 @@ class ApiService {
   
   // Dynamic Base URL based on platform
   String get baseUrl {
-    const envUrl = String.fromEnvironment('API_URL');
-    if (envUrl.isNotEmpty) {
-      return envUrl;
-    }
-
-    if (kIsWeb) {
-      return 'http://localhost:8000';
-    } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000';
-    } else {
-      return 'http://localhost:8000'; // iOS/Desktop
-    }
+    return 'https://campusfix-backend-1cc0.onrender.com';
   }
 
   Future<Map<String, String>> _getHeaders() async {

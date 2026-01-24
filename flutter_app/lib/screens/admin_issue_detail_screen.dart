@@ -218,12 +218,7 @@ class _AdminIssueDetailScreenState extends State<AdminIssueDetailScreen> {
 
   String _getFullUrl(String path) {
     if (path.startsWith('http')) return path;
-    String baseUrl = 'http://localhost:8000';
-    if (!kIsWeb) {
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        baseUrl = 'http://10.0.2.2:8000';
-      }
-    }
+    String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
     return '$baseUrl$path';
   }
 }

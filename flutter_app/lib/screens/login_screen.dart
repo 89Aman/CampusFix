@@ -51,8 +51,8 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    padding: const EdgeInsets.all(40),
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(32),
@@ -75,10 +75,10 @@ class LoginScreen extends StatelessWidget {
                         // Illustration
                         Image.asset(
                           'assets/images/login_illustration.png',
-                          width: 120,
-                          height: 120,
+                          width: 80,
+                          height: 80,
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         
                         Text(
                           'Welcome to CampusFix',
@@ -100,7 +100,7 @@ class LoginScreen extends StatelessWidget {
                                 fontSize: 16,
                               ),
                         ),
-                        const SizedBox(height: 48),
+                        const SizedBox(height: 32),
                         
                         // Google Button
                         _SocialButton(
@@ -174,7 +174,7 @@ class _SocialButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 56, // Taller button for modern feel
+      height: 48, // Compact button
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
