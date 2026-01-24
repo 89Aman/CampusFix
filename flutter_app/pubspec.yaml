@@ -56,10 +56,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-<<<<<<< HEAD
-
-# For information on the generic Dart part of this file, see the
-=======
   flutter_launcher_icons: ^0.13.1
 
 flutter_launcher_icons:
@@ -80,7 +76,6 @@ flutter_launcher_icons:
     generate: true
     image_path: "assets/app_icon.png"
 
->>>>>>> feature/supabase-storage
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.

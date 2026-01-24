@@ -12,15 +12,10 @@ import 'screens/admin_issue_detail_screen.dart';
 import 'models/issue.dart';
 
 void main() {
-<<<<<<< HEAD
-  // usePathUrlStrategy(); // ensure this doesn't crash app
-  ErrorWidget.builder = (FlutterErrorDetails details) {
-=======
   print("DEBUG: App Starting..."); // Debug print
   // usePathUrlStrategy(); // ensure this doesn't crash app
   ErrorWidget.builder = (FlutterErrorDetails details) {
     print("DEBUG: Flutter Error Caught: ${details.exception}"); // Debug print
->>>>>>> feature/supabase-storage
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.red.shade100,
@@ -28,23 +23,15 @@ void main() {
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Text(
-<<<<<<< HEAD
-               'Error: ${details.exception}',
-               style: const TextStyle(color: Colors.red),
-=======
               'Error: ${details.exception}',
               style: const TextStyle(color: Colors.red),
->>>>>>> feature/supabase-storage
             ),
           ),
         ),
       ),
     );
   };
-<<<<<<< HEAD
-=======
   print("DEBUG: Calling runApp..."); // Debug print
->>>>>>> feature/supabase-storage
   runApp(const MyApp());
 }
 
