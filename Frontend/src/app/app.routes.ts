@@ -10,7 +10,7 @@ export const routes: Routes = [
         path: '',
         component: LayoutComponent,
         children: [
-            { path: '', redirectTo: 'student/list', pathMatch: 'full' },
+            { path: '', redirectTo: 'login', pathMatch: 'full' },
             { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) },
             {
                 path: 'student/submit',

@@ -10,9 +10,31 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 from dotenv import load_dotenv
+from supabase import create_client, Client
+import secrets
+import time
 
 # Load environment variables
 load_dotenv()
+
+# Initialize Supabase Client
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+
+print(f"DEBUG: SUPABASE_URL = {supabase_url}")
+print(f"DEBUG: SUPABASE_KEY exists = {bool(supabase_key)}")
+print(f"DEBUG: SUPABASE_KEY length = {len(supabase_key) if supabase_key else 0}")
+print(f"DEBUG: SUPABASE_KEY starts with 'eyJ' = {supabase_key.startswith('eyJ') if supabase_key else False}")
+
+supabase = None
+if not supabase_url or not supabase_key:
+    print("WARNING: Supabase credentials not found in environment variables. Image uploads will fail.")
+else:
+    try:
+        supabase: Client = create_client(supabase_url, supabase_key)
+        print("SUCCESS: Supabase client initialized!")
+    except Exception as e:
+        print(f"ERROR: Failed to initialize Supabase client: {e}")
 
 from models import Base, Issue, engine, get_db
 from pydantic import BaseModel
@@ -31,8 +53,15 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:4200",
         "http://127.0.0.1:4200",
-        "http://localhost:56662",  # Alternative dev server port
-        "http://localhost:*"  # Allow any localhost port
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+        "http://localhost:56662",
+        "http://localhost:5000",
+        "http://localhost:5001",
+        "http://localhost:5005",
+        "http://127.0.0.1:5005",
+        "http://localhost:*",
+        "https://campusfix-backend-1cc0.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -61,6 +90,7 @@ oauth.register(
     authorize_params=None,
     access_token_url='https://github.com/login/oauth/access_token',
     access_token_params=None,
+    api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'user:email'},
 )
 
@@ -82,6 +112,7 @@ class IssueResponse(BaseModel):
     user_id: Optional[str]
     reporter_name: Optional[str]
     reporter_email: Optional[str]
+    priority: str = "medium"
 
     model_config = {"from_attributes": True}
 
@@ -105,41 +136,131 @@ def is_admin(user: dict) -> bool:
     return user_email in admin_emails
 
 
+# Temporary token store for mobile OAuth (in production, use Redis or database)
+mobile_auth_tokens = {}
+# Store platform info keyed by state/nonce
+platform_store = {}
+
 # Auth endpoints
 @app.get("/auth/login/google")
-async def login_google(request: Request):
-    redirect_uri = request.url_for('auth_google')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+async def login_google(request: Request, platform: str = "web"):
+    redirect_uri = str(request.url_for('auth_google'))
+    # Force HTTPS in production (Render or Cloud Run)
+    if redirect_uri.startswith("http://") and ("onrender.com" in redirect_uri or "run.app" in redirect_uri):
+        redirect_uri = redirect_uri.replace("http://", "https://")
+    
+    # Generate a unique state and store platform info
+    state = secrets.token_urlsafe(16)
+    platform_store[state] = {'platform': platform, 'created_at': time.time()}
+    
+    # Pass state to OAuth
+    return await oauth.google.authorize_redirect(request, redirect_uri, state=state)
 
 
 @app.get("/auth/callback/google")
 async def auth_google(request: Request):
+    # Get state from the callback
+    state = request.query_params.get('state', '')
+    platform_info = platform_store.pop(state, {})
+    platform = platform_info.get('platform', 'web')
+    
+    print(f"DEBUG: Google callback - state={state}, platform={platform}")
+    
     token = await oauth.google.authorize_access_token(request)
     user = token.get('userinfo')
+    
+    print(f"DEBUG: Google user={user}")
+    
     if user:
         request.session['user'] = dict(user)
-    return RedirectResponse(url='http://localhost:4200/student/submit')
+    
+    # For mobile, redirect to deep link with temporary token
+    if platform == 'mobile' and user:
+        temp_token = secrets.token_urlsafe(32)
+        mobile_auth_tokens[temp_token] = {
+            'user': dict(user),
+            'created_at': time.time()
+        }
+        print(f"DEBUG: Redirecting to campusfix://auth/callback?token={temp_token}")
+        return RedirectResponse(url=f'campusfix://auth/callback?token={temp_token}')
+    
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5005")
+    return RedirectResponse(url=f'{frontend_url}/#/issues')
 
 
 @app.get("/auth/login/github")
-async def login_github(request: Request):
-    redirect_uri = request.url_for('auth_github')
-    return await oauth.github.authorize_redirect(request, redirect_uri)
+async def login_github(request: Request, platform: str = "web"):
+    redirect_uri = str(request.url_for('auth_github'))
+    # Force HTTPS in production (Render or Cloud Run)
+    if redirect_uri.startswith("http://") and ("onrender.com" in redirect_uri or "run.app" in redirect_uri):
+        redirect_uri = redirect_uri.replace("http://", "https://")
+    
+    # Generate a unique state and store platform info
+    state = secrets.token_urlsafe(16)
+    platform_store[state] = {'platform': platform, 'created_at': time.time()}
+    
+    # Pass state to OAuth
+    return await oauth.github.authorize_redirect(request, redirect_uri, state=state)
 
 
 @app.get("/auth/callback/github")
 async def auth_github(request: Request):
+    # Get state from the callback
+    state = request.query_params.get('state', '')
+    platform_info = platform_store.pop(state, {})
+    platform = platform_info.get('platform', 'web')
+    
+    print(f"DEBUG: GitHub callback - state={state}, platform={platform}")
+    
     token = await oauth.github.authorize_access_token(request)
     resp = await oauth.github.get('user', token=token)
     user = resp.json()
+    
+    print(f"DEBUG: GitHub user={user}")
+    
+    user_data = None
     if user:
-        request.session['user'] = {
+        user_data = {
             'sub': str(user['id']),
             'name': user['name'] or user['login'],
             'email': user.get('email'),
             'picture': user['avatar_url']
         }
-    return RedirectResponse(url='http://localhost:4200/student/submit')
+        request.session['user'] = user_data
+    
+    # For mobile, redirect to deep link with temporary token
+    if platform == 'mobile' and user_data:
+        temp_token = secrets.token_urlsafe(32)
+        mobile_auth_tokens[temp_token] = {
+            'user': user_data,
+            'created_at': time.time()
+        }
+        print(f"DEBUG: Redirecting to campusfix://auth/callback?token={temp_token}")
+        return RedirectResponse(url=f'campusfix://auth/callback?token={temp_token}')
+    
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5005")
+    return RedirectResponse(url=f'{frontend_url}/#/issues')
+
+
+@app.post("/auth/exchange-token")
+async def exchange_token(request: Request):
+    """Exchange a temporary mobile auth token for user info and session"""
+    body = await request.json()
+    temp_token = body.get('token')
+    
+    if not temp_token or temp_token not in mobile_auth_tokens:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    token_data = mobile_auth_tokens.pop(temp_token)
+    
+    # Check if token is expired (5 minutes)
+    if time.time() - token_data['created_at'] > 300:
+        raise HTTPException(status_code=401, detail="Token expired")
+    
+    # Set session
+    request.session['user'] = token_data['user']
+    
+    return token_data['user']
 
 
 @app.get("/auth/me")
@@ -188,13 +309,33 @@ async def create_issue(
         image_url = None
         if image:
             file_extension = os.path.splitext(image.filename)[1]
-            filename = f"{datetime.now().timestamp()}{file_extension}"
-            file_path = f"static/uploads/{filename}"
+            filename = f"{int(datetime.now().timestamp())}_{user_id[:5]}{file_extension}"
+            
+            # Read file content
+            content = await image.read()
+            
+            # Upload to Supabase Storage
+            if not supabase:
+                 print("ERROR: Supabase client is not initialized. Skipping upload.")
+                 raise HTTPException(status_code=500, detail="Image storage service not configured.")
 
-            with open(file_path, "wb") as f:
-                content = await image.read()
-                f.write(content)
-            image_url = f"/static/uploads/{filename}"
+            try:
+                bucket_name = "issue-images"
+                res = supabase.storage.from_(bucket_name).upload(
+                    path=filename,
+                    file=content,
+                    file_options={"content-type": image.content_type}
+                )
+                
+                # Get Public URL
+                public_url_response = supabase.storage.from_(bucket_name).get_public_url(filename)
+                image_url = public_url_response
+                print(f"DEBUG: Image uploaded to Supabase: {image_url}")
+                
+            except Exception as upload_error:
+                print(f"ERROR uploading to Supabase: {upload_error}")
+                # Fallback or error handling? For now, log it.
+                # If upload fails, image_url remains None
 
         issue = Issue(
             description=description,
@@ -216,13 +357,17 @@ async def create_issue(
 
 
 @app.get("/issues", response_model=list[IssueResponse])
-def get_issues(db: Session = Depends(get_db)):
+async def get_issues(request: Request, db: Session = Depends(get_db)):
+    if not get_current_user(request):
+        raise HTTPException(status_code=401, detail="Authentication required")
     issues = db.query(Issue).order_by(Issue.created_at.desc()).all()
     return issues
 
 
 @app.post("/issues/{issue_id}/upvote")
-def upvote_issue(issue_id: int, db: Session = Depends(get_db)):
+async def upvote_issue(request: Request, issue_id: int, db: Session = Depends(get_db)):
+    if not get_current_user(request):
+        raise HTTPException(status_code=401, detail="Authentication required")
     issue = db.query(Issue).filter(Issue.id == issue_id).first()
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
@@ -242,7 +387,9 @@ def update_status(issue_id: int, status_update: StatusUpdate, db: Session = Depe
 
 
 @app.get("/analytics")
-def get_analytics(db: Session = Depends(get_db)):
+async def get_analytics(request: Request, db: Session = Depends(get_db)):
+    if not get_current_user(request):
+        raise HTTPException(status_code=401, detail="Authentication required")
     total = db.query(Issue).count()
     pending = db.query(Issue).filter(Issue.status == "pending").count()
     in_progress = db.query(Issue).filter(Issue.status == "in_progress").count()
