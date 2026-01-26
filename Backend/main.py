@@ -42,7 +42,12 @@ from pydantic import BaseModel
 # Create tables
 Base.metadata.create_all(bind=engine)
 
+# Import routers
+from safety import router as safety_router
+
 app = FastAPI()
+
+app.include_router(safety_router)
 
 # Session middleware for OAuth
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "your-secret-key-here"))

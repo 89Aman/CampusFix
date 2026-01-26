@@ -133,15 +133,15 @@ CampusFix/
 
 ### Issue Table (SQLAlchemy Model)
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
+| Column | Type | Nullable | Default | Description|
+|--------|------|----------|---------|------------|
 | `id` | Integer | No | Auto-increment | Primary key |
 | `description` | Text | No | - | Full issue description |
-| `location` | String | No | - | Location of the issue |
+| `location` | String | No | - | Location of the issue   |
 | `image_url` | String | Yes | NULL | URL/path to uploaded image |
 | `status` | String | No | `"pending"` | Issue status: `pending`, `in_progress`, `resolved` |
-| `upvotes` | Integer | No | `0` | Number of upvotes |
-| `created_at` | DateTime | No | `datetime.utcnow` | Creation timestamp (UTC) |
+| `upvotes` | Integer | No | `0` | Number of upvotes  |
+| `created_at` | DateTime | No | `datetime.utcnow` | Creation timestamp(UTC)|
 | `user_id` | String | Yes | NULL | OAuth user ID |
 | `reporter_name` | String | Yes | NULL | Reporter's display name |
 | `reporter_email` | String | Yes | NULL | Reporter's email |

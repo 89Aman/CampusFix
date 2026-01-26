@@ -12,6 +12,9 @@ import 'screens/issue_list_screen.dart';
 import 'screens/submit_issue_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/admin_issue_detail_screen.dart';
+import 'screens/safety_tools_screen.dart';
+import 'screens/safety_report_screen.dart';
+import 'screens/community_screen.dart';
 import 'models/issue.dart';
 import 'services/api_service.dart';
 
@@ -72,7 +75,15 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/issues',
-      builder: (context, state) => const IssueListScreen(),
+      builder: (context, state) => const HomeShell(initialIndex: 0),
+    ),
+    GoRoute(
+      path: '/report',
+      builder: (context, state) => const HomeShell(initialIndex: 1),
+    ),
+    GoRoute(
+      path: '/tools',
+      builder: (context, state) => const HomeShell(initialIndex: 2),
     ),
     GoRoute(
       path: '/submit',
@@ -108,6 +119,104 @@ final _router = GoRouter(
     ),
   ],
 );
+
+// HomeShell with 3-tab bottom navigation
+class HomeShell extends StatefulWidget {
+  final int initialIndex;
+  const HomeShell({super.key, this.initialIndex = 0});
+
+  @override
+  State<HomeShell> createState() => _HomeShellState();
+}
+
+class _HomeShellState extends State<HomeShell> {
+  late int _currentIndex;
+
+  final List<Widget> _screens = const [
+    IssueListScreen(),
+    SafetyReportScreen(),
+    SafetyToolsScreen(),
+    CommunityScreen(),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Icons.list_alt, 'Issues'),
+                _buildNavItem(1, Icons.shield, 'Report'),
+                _buildNavItem(2, Icons.health_and_safety, 'Tools'),
+                _buildNavItem(3, Icons.people_rounded, 'Community'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _currentIndex == index;
+    final color = isSelected ? const Color(0xFF8B5CF6) : Colors.grey;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF8B5CF6).withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 // Splash screen to check for existing login session
 class SplashScreen extends StatefulWidget {

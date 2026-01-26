@@ -38,6 +38,19 @@ class Issue(Base):
     priority = Column(String, default="medium") # high, medium, low
 
 
+class SafetyReport(Base):
+    __tablename__ = "safety_reports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(Text, nullable=False)
+    location = Column(String, nullable=False)
+    media_url = Column(String, nullable=True)
+    is_nsfw = Column(Integer, default=0) # 0=False, 1=True (using Integer for SQLite boolean compatibility if needed, though SQLAlchemy handles Boolean)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    status = Column(String, default="received") # received, investigating, resolved
+    is_critical = Column(Integer, default=1) # Default to True (1) as safety issues are critical
+
+
 def get_db():
     db = SessionLocal()
     try:

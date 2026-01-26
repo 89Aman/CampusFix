@@ -23,6 +23,10 @@ export const routes: Routes = [
                 // No auth guard - anyone can view issues
             },
             {
+                path: 'safety',
+                loadComponent: () => import('./pages/safety/safety').then(m => m.Safety)
+            },
+            {
                 path: 'admin/dashboard',
                 component: AdminDashboard,
                 canActivate: [authGuard]
