@@ -1,127 +1,106 @@
-# 🏫 CampusFix - Smart Campus Issue Reporter
+# 🏫 CampusFix - Smart Campus Maintenance & Safety Platform
 
-CampusFix is a modern, transparent, and efficient system designed to streamline campus facility management. It bridges the gap between students/staff and administration by providing a real-time platform for reporting and tracking infrastructure issues.
+**CampusFix** is a next-generation platform designed to streamline campus facility management and enhance student safety. It provides a real-time, transparent bridge between students, staff, and administration.
 
----
-
-## 🎯 The Problem
-Students and staff frequently face infrastructure issues like **broken fans, dirty washrooms, lack of drinking water, and faulty lights**. However, the current state of affairs is inefficient:
-- 🐌 **Manual Complaints**: Reporting is slow, bureaucratic, or verbal.
-- 📉 **Zero Transparency**: No tracking of complaint status.
-- 🙈 **Ignored Issues**: "Submit and forget" leads to long-standing problems.
-- 📊 **No Data**: Admin lacks data to prioritize repairs effectively.
-
-## 💡 The Solution: CampusFix
-**CampusFix** digitizes the entire process, ensuring accountability and speed.
-- **Instant Reporting**: Snap a picture, add a location, and submit in seconds (guest or logged in).
-- **Transparency**: Real-time status updates (Pending → In Progress → Resolved).
-- **Validation**: Upvoting system to highlight critical/common issues.
-- **Admin Power**: Data-driven dashboard for maintenance teams to prioritize tasks.
+🚀 **Version 1.0.0 (Stable Release)**: Now featuring a full Flutter mobile app, PostgreSQL-backed persistence, and advanced safety tools.
 
 ---
 
-## ✨ Key Features
+## 🌟 Key Features
 
-### 🚀 For Students & Staff
-- **📸 Quick Reporting**: Fast issue submission with image compression.
-- **👤 Guest Access**: Report anonymously without logging in.
-- **🔐 Secure Login**: Google & GitHub OAuth integration.
-- **👍 Upvotes**: "Me too" functionality to escalate popular issues.
-- **📱 Responsive Design**: Works on mobile and desktop.
-- **🌗 Dark Mode**: Full dark theme support for comfortable viewing.
+### 🛠 Maintenance & Infrastructure
+- **📸 Smart Reporting**: Snap photos of campus issues (broken fans, leaks, etc.) and report them instantly.
+- **📍 Location Tagging**: Precise location logging for faster maintenance dispatch.
+- **📈 Live Tracking**: Real-time status updates: `Pending` → `In Progress` → `Resolved`.
+- **👍 Community Upvotes**: High-priority issues are automatically escalated based on community votes.
 
-### For Administration
-- **Dashboard Overview**: View live analytics (Total, Pending, Resolved).
-- **Interactive Charts**: Visualize issue status distribution.
-- **Priority System**: Auto-calculated priority (Low/Medium/High) based on upvotes.
-- **Issue Details**: View reporter information (Name/Email) and full issue context.
-- **Status Management**: Update issue status realistically.
-- **🛡️ Role-Based Access**: Secure admin features protected by email authorization.
-- **📈 Analytics**: Track submission trends (coming soon).
+### 🛡 Safety & Emergency Tools
+- **🆘 SOS Button**: Instant access to emergency campus contacts (e.g., Police, Security).
+- **🚨 Virtual Siren**: Loud audible alert for immediate attention in dangerous situations.
+- **📍 Location Sharing**: Share your live GPS coordinates with trusted contacts via SMS or social apps.
+- **📢 Community Safety Feed**: An anonymous, transparent feed to keep the campus informed about safety incidents.
+
+### 👨‍💼 Administration Portal
+- **📊 Analytics Dashboard**: View total, pending, and resolved issues at a glance.
+- **🛡️ Role-Based Access**: Secure dashboard protected by authorized admin emails.
+- **🔄 Priority Management**: Data-driven task prioritization based on community feedback.
 
 ---
 
 ## 🛠️ Technology Stack
 
-**Frontend**
-- **Framework**: Angular 17+ (Standalone Components)
-- **Styling**: TailwindCSS (Responsive & Dark Mode)
-- **Language**: TypeScript
-
-**Backend**
-- **Framework**: FastAPI (Python)
-- **Database**: SQLite (SQLAlchemy ORM)
-- **Authentication**: OAuth 2.0 (Google & GitHub)
-- **Validation**: Pydantic
+| Layer | Technology |
+| :--- | :--- |
+| **Mobile App** | Flutter (Android/iOS) |
+| **Web Frontend** | Angular 17+ (TailwindCSS) |
+| **Backend API** | FastAPI (Python 3.11) |
+| **Database** | PostgreSQL (Supabase) |
+| **Storage** | Supabase Storage (Images) |
+| **Authentication** | OAuth 2.0 (Google & GitHub) |
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js (v18+)
-- Python (v3.9+)
-- Git
-
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/CampusFix.git
+git clone https://github.com/89Aman/CampusFix.git
 cd CampusFix
 ```
 
-### 2️⃣ Frontend Setup
+### 2️⃣ Backend Setup
+```bash
+cd Backend
+python -m venv venv
+# Activate venv: .\venv\Scripts\activate (Windows) or source venv/bin/activate (Linux/Mac)
+pip install -r requirements.txt
+```
+**Environment Config**: Create a `.env` file in the `Backend/` folder:
+```env
+DATABASE_URL=postgresql://user:pass@host:port/postgres
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+SECRET_KEY=your_secure_secret
+ADMIN_EMAILS=admin@campus.edu,you@gmail.com
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+```
+
+### 3️⃣ Mobile Setup (Flutter)
+```bash
+cd flutter_app
+flutter pub get
+flutter build apk --release # To generate the installable APK
+flutter run # To run in debug mode on a connected device
+```
+
+### 4️⃣ Web Setup (Angular)
 ```bash
 cd Frontend
 npm install
 npm start
 ```
-The app will be available at `http://localhost:4200`.
-
-### 3️⃣ Backend Setup
-```bash
-cd Backend
-# Create virtual environment (optional but recommended)
-python -m venv venv
-# Windows
-.\venv\Scripts\activate
-# Mac/Linux
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run server
-python main.py
-```
-The API will be available at `http://localhost:8000`.
 
 ---
 
-## 🔑 Environment Configuration
-
-Create a `.env` file in the `Backend` directory:
-
-```env
-SECRET_KEY=your_secure_secret_key
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-# GitHub OAuth
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-# Admin Access
-ADMIN_EMAILS=admin@example.com,your_email@gmail.com
+## 🧪 Quality & Verification
+The platform includes a dedicated testing suite to ensure database integrity and API reliability:
+```bash
+cd Backend
+python test_verification.py # Runs end-to-end flow verification
+python verify_db.py         # Validates Supabase connection
 ```
 
 ---
 
 ## 🤝 Contributing
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the Project.
+2. Create your Feature Branch (`git checkout -b feature/NewFeature`).
+3. Commit Changes (`git commit -m 'Add NewFeature'`).
+4. Push to Branch (`git push origin feature/NewFeature`).
+5. Open a Pull Request.
 
 ---
-
-Built with ❤️ for better campuses.
+Built with ❤️ by the CampusFix Team to make campuses safer and better maintained.
