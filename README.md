@@ -38,5 +38,6 @@ _____________________________________________________
 | **Storage**         | Supabase Storage (Images)   |
 | **Authentication**  | OAuth 2.0 (Google & GitHub) |
 _____________________________________________________
----
+
+
 Built with ❤️ by the CampusFix Team to make campuses safer and better maintained.
