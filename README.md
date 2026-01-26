@@ -37,6 +37,7 @@ _____________________________________________________
 | **Database**        | PostgreSQL (Supabase)       |
 | **Storage**         | Supabase Storage (Images)   |
 | **Authentication**  | OAuth 2.0 (Google & GitHub) |
+| **Deployment**      | GCP                         |
 _____________________________________________________
 
 
