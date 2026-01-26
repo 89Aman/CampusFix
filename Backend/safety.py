@@ -12,7 +12,7 @@ try:
 except ImportError:
     Nude = None
 
-from main import get_current_user, is_admin, supabase
+from dependencies import get_current_user, is_admin, supabase
 
 router = APIRouter(prefix="/safety", tags=["safety"])
 

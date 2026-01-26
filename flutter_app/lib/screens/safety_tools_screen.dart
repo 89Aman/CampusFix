@@ -95,7 +95,8 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
       setState(() => _isSirenPlaying = false);
     } else {
       try {
-        await _audioPlayer.setSourceUrl('https://www.soundjay.com/mechanical/sounds/air-raid-siren-1.mp3');
+        // CHANGED: Use local asset instead of URL
+        await _audioPlayer.setSource(AssetSource('sounds/siren.mp3'));
         await _audioPlayer.setReleaseMode(ReleaseMode.loop);
         await _audioPlayer.resume();
         setState(() => _isSirenPlaying = true);
@@ -113,7 +114,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         debugPrint("Error playing siren: $e");
          if (mounted) {
            ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not play siren audio. Check internet.')),
+            const SnackBar(content: Text('Could not play siren audio.')),
           );
         }
       }
@@ -195,23 +196,29 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
   Future<void> _sendSmsToContacts(String message) async {
     if (_contacts.isEmpty) return;
     
-    // Construct sms: URI
-    // Android: sms:n1;n2?body=...
-    // iOS: sms:n1,n2&body=... (iOS divider is comma, Android is usually semicolon)
-    
+    // Better cross-platform SMS handling
     final separator = Platform.isAndroid ? ';' : '&';
     final numbers = _contacts.map((c) => c['number']).join(separator);
-    final Uri uri = Uri(
-      scheme: 'sms',
-      path: numbers,
-      queryParameters: {'body': message},
-    );
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      // Fallback
-      debugPrint("Could not launch SMS uri: $uri");
+    
+    // Explicitly encode the body parameter
+    final String encodedBody = Uri.encodeComponent(message);
+    
+    // Try multiple URI formats for better compatibility
+    final Uri smsUri = Uri.parse('sms:$numbers?body=$encodedBody');
+    
+    try {
+      if (await canLaunchUrl(smsUri)) {
+        await launchUrl(smsUri);
+      } else {
+        // Fallback for some Android devices using '?' separator
+        final Uri altUri = Uri.parse('sms:$numbers?body=$encodedBody'); 
+        // Note: url_launcher handles most details but separators vary
+        // Let's try Share.share if strict SMS fails as a last resort fallback
+        await Share.share(message);
+      }
+    } catch (e) {
+       debugPrint("SMS launch failed: $e");
+       await Share.share(message);
     }
   }
 
@@ -449,81 +456,140 @@ class _ContactsSheetState extends State<_ContactsSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Emergency Contacts',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Emergency Contacts',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              if (!_isAdding)
+                IconButton(
+                  icon: const Icon(Icons.add_circle, color: Color(0xFFEA580C), size: 30),
+                  onPressed: () => setState(() => _isAdding = true),
+                ),
+            ],
           ),
           const SizedBox(height: 6),
           const Text(
             'We will send your location to these contacts.',
             style: TextStyle(color: Colors.grey),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           
-          if (widget.contacts.isEmpty)
+          if (_isAdding) 
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Name', 
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _numberController,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone Number', 
+                      prefixIcon: Icon(Icons.phone),
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => setState(() => _isAdding = false), 
+                          child: const Text('Cancel')
+                        )
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_nameController.text.isNotEmpty && _numberController.text.isNotEmpty) {
+                              widget.onAdd(_nameController.text, _numberController.text);
+                              _nameController.clear();
+                              _numberController.clear();
+                              setState(() => _isAdding = false);
+                            }
+                          },
+                          child: const Text('Save Contact'),
+                        )
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+          const SizedBox(height: 10),
+
+          if (widget.contacts.isEmpty && !_isAdding)
             const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('No contacts added yet.', textAlign: TextAlign.center),
+              padding: EdgeInsets.all(30),
+              child: Text(
+                'No contacts yet.\nTap + to add someone you trust.', 
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
 
           ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 200),
+            constraints: const BoxConstraints(maxHeight: 250),
             child: ListView.separated(
               shrinkWrap: true,
               itemCount: widget.contacts.length,
-              separatorBuilder: (_, __) => const Divider(),
+              separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (ctx, i) {
                 final c = widget.contacts[i];
                 return ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.person)),
-                  title: Text(c['name'] ?? ''),
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    backgroundColor: const Color(0xFFF3F4F6),
+                    child: Text(c['name']?[0] ?? '?', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  title: Text(c['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
                   subtitle: Text(c['number'] ?? ''),
                   trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => widget.onDelete(i),
+                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                    onPressed: () {
+                      // Confirm delete
+                      showDialog(
+                        context: context,
+                        builder: (dCtx) => AlertDialog(
+                          title: const Text('Remove Contact?'),
+                          content: Text('Remove ${c['name']} from emergency contacts?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(dCtx), child: const Text('Cancel')),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(dCtx);
+                                widget.onDelete(i);
+                              }, 
+                              child: const Text('Remove', style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 );
               },
             ),
           ),
-          
-          if (_isAdding) ...[
-            const Divider(),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name', prefixIcon: Icon(Icons.person)),
-            ),
-            TextField(
-              controller: _numberController,
-              decoration: const InputDecoration(labelText: 'Phone Number', prefixIcon: Icon(Icons.phone)),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: TextButton(onPressed: () => setState(() => _isAdding = false), child: const Text('Cancel'))),
-                Expanded(child: ElevatedButton(
-                  onPressed: () {
-                    if (_nameController.text.isNotEmpty && _numberController.text.isNotEmpty) {
-                      widget.onAdd(_nameController.text, _numberController.text);
-                      _nameController.clear();
-                      _numberController.clear();
-                      setState(() => _isAdding = false);
-                    }
-                  },
-                  child: const Text('Save'),
-                )),
-              ],
-            ),
-          ] else
-             Padding(
-               padding: const EdgeInsets.symmetric(vertical: 20),
-               child: ElevatedButton.icon(
-                onPressed: () => setState(() => _isAdding = true),
-                icon: const Icon(Icons.add),
-                label: const Text('Add Contact'),
-                           ),
-             ),
            const SizedBox(height: 20),
         ],
       ),

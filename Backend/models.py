@@ -36,6 +36,7 @@ class Issue(Base):
     reporter_name = Column(String, nullable=True)
     reporter_email = Column(String, nullable=True)
     priority = Column(String, default="medium") # high, medium, low
+    category = Column(String, default="general") # general, safety_hazard
 
 
 class SafetyReport(Base):

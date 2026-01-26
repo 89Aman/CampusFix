@@ -13,97 +13,65 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 import secrets
 import time
+from pydantic import BaseModel
 
 # Load environment variables
 load_dotenv()
 
-# Initialize Supabase Client
-supabase_url = os.getenv("SUPABASE_URL")
-supabase_key = os.getenv("SUPABASE_KEY")
-
-print(f"DEBUG: SUPABASE_URL = {supabase_url}")
-print(f"DEBUG: SUPABASE_KEY exists = {bool(supabase_key)}")
-print(f"DEBUG: SUPABASE_KEY length = {len(supabase_key) if supabase_key else 0}")
-print(f"DEBUG: SUPABASE_KEY starts with 'eyJ' = {supabase_key.startswith('eyJ') if supabase_key else False}")
-
-supabase = None
-if not supabase_url or not supabase_key:
-    print("WARNING: Supabase credentials not found in environment variables. Image uploads will fail.")
-else:
-    try:
-        supabase: Client = create_client(supabase_url, supabase_key)
-        print("SUCCESS: Supabase client initialized!")
-    except Exception as e:
-        print(f"ERROR: Failed to initialize Supabase client: {e}")
-
-from models import Base, Issue, engine, get_db
-from pydantic import BaseModel
+from dependencies import supabase
+from models import Issue, get_db, Base, engine
+import safety
 
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-# Import routers
-from safety import router as safety_router
+app = FastAPI(title="CampusFix API")
 
-app = FastAPI()
+app.include_router(safety.router)
 
-app.include_router(safety_router)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SECRET_KEY", "super-secret-key"),
+    max_age=3600, 
+    https_only=False # Set to True in production with proper SSL
+)
 
-# Session middleware for OAuth
-app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "your-secret-key-here"))
-
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:4200",
-        "http://127.0.0.1:4200",
-        "http://localhost:4200",
-        "http://127.0.0.1:4200",
-        "http://localhost:56662",
-        "http://localhost:5000",
-        "http://localhost:5001",
-        "http://localhost:5005",
-        "http://127.0.0.1:5005",
-        "http://localhost:*",
-        "https://campusfix-backend-1cc0.onrender.com"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Static files for uploaded images
-os.makedirs("static/uploads", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# OAuth setup
+# OAuth Setup
 oauth = OAuth()
+
 oauth.register(
     name='google',
     client_id=os.getenv("GOOGLE_CLIENT_ID"),
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'}
+    client_kwargs={
+        'scope': 'openid email profile'
+    }
 )
 
 oauth.register(
     name='github',
     client_id=os.getenv("GITHUB_CLIENT_ID"),
     client_secret=os.getenv("GITHUB_CLIENT_SECRET"),
-    authorize_url='https://github.com/login/oauth/authorize',
-    authorize_params=None,
     access_token_url='https://github.com/login/oauth/access_token',
-    access_token_params=None,
+    authorize_url='https://github.com/login/oauth/authorize',
     api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'user:email'},
 )
-
 
 # Pydantic models
 class IssueCreate(BaseModel):
     description: str
     location: str
+    category: Optional[str] = None
 
 
 class IssueResponse(BaseModel):
@@ -118,6 +86,7 @@ class IssueResponse(BaseModel):
     reporter_name: Optional[str]
     reporter_email: Optional[str]
     priority: str = "medium"
+    category: str = "general"
 
     model_config = {"from_attributes": True}
 
@@ -311,6 +280,14 @@ async def create_issue(
         if not reporter_name:
              reporter_name = user.get('email', '').split('@')[0]
 
+        # Auto-categorization Logic
+        category = "general"
+        safety_keywords = ['fire', 'smoke', 'spark', 'wire', 'shock', 'leak', 'gas', 'explosion', 'danger', 'hazard', 'unsafe', 'broken', 'crack', 'collapse']
+        desc_lower = description.lower()
+        if any(word in desc_lower for word in safety_keywords):
+            category = "safety_hazard"
+            print(f"DEBUG: Auto-categorized as SAFETY_HAZARD")
+
         image_url = None
         if image:
             file_extension = os.path.splitext(image.filename)[1]
@@ -348,7 +325,8 @@ async def create_issue(
             image_url=image_url,
             user_id=user_id,
             reporter_name=reporter_name,
-            reporter_email=user.get('email')
+            reporter_email=user.get('email'),
+            category=category
         )
         db.add(issue)
         db.commit()

@@ -1,0 +1,9 @@
+C:\Users\Asus\Clone-repo\CampusFix\Backend\seed_data.py:54: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  created_at=datetime.utcnow() - timedelta(days=random.randint(0, 5))
+C:\Users\Asus\Clone-repo\CampusFix\Backend\seed_data.py:90: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  created_at=datetime.utcnow() - timedelta(hours=random.randint(1, 48))
+Seeding data...
+Error seeding data: (sqlite3.OperationalError) table issues has no column named priority
+[SQL: INSERT INTO issues (description, location, image_url, status, upvotes, created_at, user_id, reporter_name, reporter_email, priority, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id]
+[parameters: ('Broken projector in Lecture Hall 3', 'Lecture Hall 3', None, 'pending', 5, '2026-01-21 14:53:37.334356', None, 'Student A', None, 'medium', 'general')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
