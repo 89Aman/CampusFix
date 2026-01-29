@@ -163,8 +163,23 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
       }
 
       try {
+        // Verify file exists and has content
+        final file = File(_sirenPath!);
+        if (await file.exists()) {
+          final size = await file.length();
+          debugPrint('Siren file size: $size bytes');
+          if (size == 0) {
+             throw Exception('Siren file is empty');
+          }
+        } else {
+           throw Exception('Siren file not found at path');
+        }
+
         // Stop any existing playback first
         await _audioPlayer.stop();
+        
+        // Explicity set volume to max
+        await _audioPlayer.setVolume(1.0);
         
         // Set release mode to loop before playing
         await _audioPlayer.setReleaseMode(ReleaseMode.loop);
