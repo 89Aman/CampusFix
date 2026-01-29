@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SafetyToolsScreen extends StatefulWidget {
   const SafetyToolsScreen({super.key});
@@ -20,12 +22,14 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
   final _storage = const FlutterSecureStorage();
   
   bool _isSirenPlaying = false;
+  String? _sirenPath;
   List<Map<String, String>> _contacts = []; // [{'name': 'Mom', 'number': '123'}]
 
   @override
   void initState() {
     super.initState();
     _loadContacts();
+    _copySirenToDevice();
   }
 
   @override
@@ -89,21 +93,55 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
     }
   }
 
+  // Copy siren audio from assets to device storage
+  Future<void> _copySirenToDevice() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/siren.mp3';
+      final file = File(filePath);
+
+      // Only copy if file doesn't exist
+      if (!await file.exists()) {
+        final byteData = await rootBundle.load('assets/sounds/siren.mp3');
+        final buffer = byteData.buffer;
+        await file.writeAsBytes(
+          buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+        );
+        debugPrint('Siren audio copied to: $filePath');
+      }
+
+      setState(() {
+        _sirenPath = filePath;
+      });
+    } catch (e) {
+      debugPrint('Error copying siren audio: $e');
+    }
+  }
+
   Future<void> _toggleSiren(BuildContext context) async {
     if (_isSirenPlaying) {
       await _audioPlayer.stop();
       setState(() => _isSirenPlaying = false);
     } else {
+      // Check if siren file is ready
+      if (_sirenPath == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Siren audio is loading, please wait...')),
+          );
+        }
+        return;
+      }
+
       try {
         // Stop any existing playback first
         await _audioPlayer.stop();
         
-        // Set the audio source
-        await _audioPlayer.setSource(AssetSource('sounds/siren.mp3'));
+        // Set release mode to loop before playing
         await _audioPlayer.setReleaseMode(ReleaseMode.loop);
         
-        // Use play() instead of resume() for initial playback
-        await _audioPlayer.play(AssetSource('sounds/siren.mp3'));
+        // Play the audio from device storage
+        await _audioPlayer.play(DeviceFileSource(_sirenPath!));
         
         setState(() => _isSirenPlaying = true);
         
@@ -120,7 +158,10 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         debugPrint("Error playing siren: $e");
          if (mounted) {
            ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not play siren audio: $e')),
+            SnackBar(
+              content: Text('Could not play siren audio: $e'),
+              duration: Duration(seconds: 3),
+            ),
           );
         }
       }
