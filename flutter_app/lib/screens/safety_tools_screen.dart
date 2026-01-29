@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:geolocator/geolocator.dart';
@@ -93,28 +94,56 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
     }
   }
 
-  // Copy siren audio from assets to device storage
+  // Download siren audio from internet and save to device storage
   Future<void> _copySirenToDevice() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final filePath = '${directory.path}/siren.mp3';
       final file = File(filePath);
 
-      // Only copy if file doesn't exist
+      // Only download if file doesn't exist
       if (!await file.exists()) {
-        final byteData = await rootBundle.load('assets/sounds/siren.mp3');
-        final buffer = byteData.buffer;
-        await file.writeAsBytes(
-          buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+        debugPrint('Downloading siren audio from internet...');
+        
+        // Download from a reliable siren sound URL
+        final response = await HttpClient().getUrl(
+          Uri.parse('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'),
         );
-        debugPrint('Siren audio copied to: $filePath');
+        final httpResponse = await response.close();
+        
+        // Save to file
+        final bytes = await consolidateHttpClientResponseBytes(httpResponse);
+        await file.writeAsBytes(bytes);
+        
+        debugPrint('Siren audio downloaded and saved to: $filePath');
+      } else {
+        debugPrint('Siren audio already exists at: $filePath');
       }
 
       setState(() {
         _sirenPath = filePath;
       });
     } catch (e) {
-      debugPrint('Error copying siren audio: $e');
+      debugPrint('Error downloading siren audio: $e');
+      // Fallback: try to use asset if download fails
+      try {
+        final directory = await getApplicationDocumentsDirectory();
+        final filePath = '${directory.path}/siren.mp3';
+        final file = File(filePath);
+        
+        final byteData = await rootBundle.load('assets/sounds/siren.mp3');
+        final buffer = byteData.buffer;
+        await file.writeAsBytes(
+          buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+        );
+        
+        setState(() {
+          _sirenPath = filePath;
+        });
+        debugPrint('Used fallback asset for siren audio');
+      } catch (fallbackError) {
+        debugPrint('Fallback also failed: $fallbackError');
+      }
     }
   }
 
