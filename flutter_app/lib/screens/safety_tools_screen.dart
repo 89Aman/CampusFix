@@ -95,10 +95,16 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
       setState(() => _isSirenPlaying = false);
     } else {
       try {
-        // CHANGED: Use local asset instead of URL
+        // Stop any existing playback first
+        await _audioPlayer.stop();
+        
+        // Set the audio source
         await _audioPlayer.setSource(AssetSource('sounds/siren.mp3'));
         await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-        await _audioPlayer.resume();
+        
+        // Use play() instead of resume() for initial playback
+        await _audioPlayer.play(AssetSource('sounds/siren.mp3'));
+        
         setState(() => _isSirenPlaying = true);
         
         if (mounted) {
@@ -114,7 +120,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         debugPrint("Error playing siren: $e");
          if (mounted) {
            ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not play siren audio.')),
+            SnackBar(content: Text('Could not play siren audio: $e')),
           );
         }
       }

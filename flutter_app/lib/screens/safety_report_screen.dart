@@ -60,7 +60,11 @@ class _SafetyReportScreenState extends State<SafetyReportScreen> {
 
       await _apiService.postMultipart(
         '/safety/reports',
-        fields,
+        {
+          'description': _descriptionController.text,
+          'location': _locationController.text,
+          'category': 'safety_hazard',
+        },
         fileField: 'media',
         fileBytes: fileBytes,
         filename: filename,

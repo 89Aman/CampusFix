@@ -86,6 +86,7 @@ class IssuesProvider with ChangeNotifier {
     required String description,
     required String location,
     PlatformFile? imageFile,
+    String category = 'general',
   }) async {
     try {
       List<int>? fileBytes;
@@ -105,6 +106,7 @@ class IssuesProvider with ChangeNotifier {
         {
           'description': description,
           'location': location,
+          'category': category,
         },
         fileField: 'image',
         fileBytes: fileBytes,

@@ -18,7 +18,7 @@ class AdminIssueDetailScreen extends StatefulWidget {
 
 class _AdminIssueDetailScreenState extends State<AdminIssueDetailScreen> {
   late Issue? _issue;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {

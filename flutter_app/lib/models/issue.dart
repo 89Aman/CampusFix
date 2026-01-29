@@ -8,6 +8,8 @@ class Issue {
   final DateTime createdAt;
   final String? reporterName;
   final String? reporterEmail;
+  final String category;
+  final bool userHasUpvoted;
 
   Issue({
     required this.id,
@@ -19,6 +21,8 @@ class Issue {
     required this.createdAt,
     this.reporterName,
     this.reporterEmail,
+    this.category = 'general',
+    this.userHasUpvoted = false,
   });
 
   factory Issue.fromJson(Map<String, dynamic> json) {
@@ -32,6 +36,8 @@ class Issue {
       createdAt: DateTime.parse(json['created_at']),
       reporterName: json['reporter_name'],
       reporterEmail: json['reporter_email'],
+      category: json['category'] ?? 'general',
+      userHasUpvoted: json['user_has_upvoted'] ?? false,
     );
   }
 }

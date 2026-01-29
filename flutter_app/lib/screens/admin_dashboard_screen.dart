@@ -92,7 +92,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF334155)),
               ),
               const SizedBox(height: 16),
-              ...provider.issues.map((issue) => _AdminIssueCard(issue: issue)).toList(),
+              ...provider.issues.map((issue) => _AdminIssueCard(issue: issue)),
             ],
           );
         },

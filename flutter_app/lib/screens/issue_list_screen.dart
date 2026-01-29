@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../providers/issues_provider.dart';
 import '../models/issue.dart';
@@ -297,29 +296,39 @@ class IssueCard extends StatelessWidget {
                       ],
                     ),
                     InkWell(
-                      onTap: () {
+                      onTap: issue.userHasUpvoted ? null : () {
                          context.read<IssuesProvider>().upvoteIssue(issue.id);
                       },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                          color: issue.userHasUpvoted 
+                              ? Theme.of(context).colorScheme.primary 
+                              : Theme.of(context).colorScheme.primary.withOpacity(0.05),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.1)),
+                          border: Border.all(
+                            color: issue.userHasUpvoted 
+                                ? Theme.of(context).colorScheme.primary 
+                                : Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                          ),
                         ),
                         child: Row(
                           children: [
                             Icon(
-                              Icons.thumb_up_rounded, 
+                              issue.userHasUpvoted ? Icons.thumb_up : Icons.thumb_up_outlined, 
                               size: 16, 
-                              color: Theme.of(context).colorScheme.primary
+                              color: issue.userHasUpvoted 
+                                  ? Colors.white 
+                                  : Theme.of(context).colorScheme.primary
                             ),
                             const SizedBox(width: 6),
                             Text(
                               '${issue.upvotes}',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: issue.userHasUpvoted 
+                                    ? Colors.white 
+                                    : Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

@@ -20,6 +20,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   String _summary = '';
   String _location = '';
   String _description = '';
+  bool _isSafetyHazard = false;
   
   // Image handling
   PlatformFile? _pickedFile;
@@ -72,6 +73,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
         description: fullDescription,
         location: _location,
         imageFile: _pickedFile,
+        category: _isSafetyHazard ? 'safety_hazard' : 'general',
       );
 
       if (mounted) {
@@ -223,10 +225,67 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                        onSaved: (value) => _location = value ?? '',
                      ),
                      
-                     const SizedBox(height: 16),
-                     
-                     // Description
-                     TextFormField(
+                      const SizedBox(height: 16),
+                      
+                      // Safety Hazard Toggle
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: _isSafetyHazard ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _isSafetyHazard ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
+                            width: _isSafetyHazard ? 2 : 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.warning_rounded,
+                              color: _isSafetyHazard ? const Color(0xFFEF4444) : const Color(0xFF64748B),
+                              size: 28,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Safety Hazard',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Mark this as an urgent safety issue',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Switch(
+                              value: _isSafetyHazard,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isSafetyHazard = value;
+                                });
+                              },
+                              activeColor: const Color(0xFFEF4444),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Description
+                      TextFormField(
                        decoration: const InputDecoration(
                          labelText: 'Description',
                          hintText: 'Describe the issue briefly...',
