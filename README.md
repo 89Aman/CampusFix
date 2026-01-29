@@ -40,5 +40,9 @@ _____________________________________________________
 | **Deployment**      | GCP (Cloud Run)             |
 _____________________________________________________
 
+## System Flow
+
+![CampusFix](https://raw.githubusercontent.com/89Aman/CampusFix/main/Gemini_Generated_Image_2hnp8s2hnp8s2hnp%20(1).png)
+
 
 Built with ❤️ by the CampusFix Team to make campuses safer and better maintained.
