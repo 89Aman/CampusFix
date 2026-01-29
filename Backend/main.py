@@ -44,6 +44,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # OAuth Setup
 oauth = OAuth()
 
@@ -303,27 +306,41 @@ async def create_issue(
             content = await image.read()
             
             # Upload to Supabase Storage
-            if not supabase:
-                 print("ERROR: Supabase client is not initialized. Skipping upload.")
-                 raise HTTPException(status_code=500, detail="Image storage service not configured.")
-
-            try:
-                bucket_name = "issue-images"
-                res = supabase.storage.from_(bucket_name).upload(
-                    path=filename,
-                    file=content,
-                    file_options={"content-type": image.content_type}
-                )
-                
-                # Get Public URL
-                public_url_response = supabase.storage.from_(bucket_name).get_public_url(filename)
-                image_url = public_url_response
-                print(f"DEBUG: Image uploaded to Supabase: {image_url}")
-                
-            except Exception as upload_error:
-                print(f"ERROR uploading to Supabase: {upload_error}")
-                # Fallback or error handling? For now, log it.
-                # If upload fails, image_url remains None
+            if supabase:
+                try:
+                    bucket_name = "issue-images"
+                    res = supabase.storage.from_(bucket_name).upload(
+                        path=filename,
+                        file=content,
+                        file_options={"content-type": image.content_type}
+                    )
+                    
+                    # Get Public URL
+                    public_url_response = supabase.storage.from_(bucket_name).get_public_url(filename)
+                    image_url = public_url_response
+                    print(f"DEBUG: Image uploaded to Supabase: {image_url}")
+                    
+                except Exception as upload_error:
+                    print(f"ERROR uploading to Supabase: {upload_error}")
+                    # Decide if we want to fallback or just fail. 
+                    # For now, let's fallback to local limits data loss.
+                    pass 
+            
+            # Fallback to local storage if Supabase failed or is missing
+            if not image_url:
+                try:
+                    os.makedirs("static/uploads", exist_ok=True)
+                    local_path = os.path.join("static", "uploads", filename)
+                    with open(local_path, "wb") as f:
+                        f.write(content)
+                    
+                    # Construct URL (Relative path or absolute if we had request info)
+                    # Ideally: http://host:port/static/uploads/filename
+                    # Storing relative path /static/uploads/filename
+                    image_url = f"/static/uploads/{filename}"
+                    print(f"DEBUG: Image saved locally: {local_path}")
+                except Exception as local_error:
+                    print(f"ERROR saving locally: {local_error}")
 
         issue = Issue(
             description=description,

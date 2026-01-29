@@ -231,7 +231,7 @@ class _AdminIssueCard extends StatelessWidget {
     // Helper to construct image URL
   String _getFullUrl(String path) {
     if (path.startsWith('http')) return path;
-    const String baseUrl = 'https://campusfix-backend-1cc0.onrender.com';
+    const String baseUrl = 'https://backend-492502501801.europe-west1.run.app';
     return '$baseUrl$path';
   }
 }
