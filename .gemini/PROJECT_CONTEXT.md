@@ -19,39 +19,37 @@
 
 ## 🏗️ System Architecture
 
-```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              CampusFix System                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────────────┐ │
-│  │   Flutter App       │  │   Angular Frontend  │  │                     │ │
-│  │   (Mobile/Web)      │  │   (Web Only)        │  │   FastAPI Backend   │ │
-│  │                     │  │                     │  │                     │ │
-│  │  • Issue Submission │  │  • Issue Submission │  │  • REST API         │ │
-│  │  • Issue List       │  │  • Issue List       │  │  • OAuth 2.0        │ │
-│  │  • Admin Dashboard  │  │  • Admin Dashboard  │  │  • SQLite/Postgres  │ │
-│  │  • OAuth Login      │  │  • OAuth Login      │  │  • Supabase Storage │ │
-│  └──────────┬──────────┘  └──────────┬──────────┘  └──────────┬──────────┘ │
-│             │                        │                        │             │
-│             └────────────────────────┼────────────────────────┘             │
-│                                      │                                      │
-│                         ┌────────────▼────────────┐                        │
-│                         │   Cloud Deployment      │                        │
-│                         │   (Render / GCP Cloud   │                        │
-│                         │    Run / Vercel)        │                        │
-│                         └─────────────────────────┘                        │
+│  ┌─────────────────────┐                   ┌─────────────────────┐          │
+│  │   Flutter App       │                   │                     │          │
+│  │   (Mobile/Web)      │◄─────────────────►│   FastAPI Backend   │          │
+│  │                     │                   │                     │          │
+│  │  • Issue Submission │                   │  • REST API         │          │
+│  │  • Issue List       │                   │  • OAuth 2.0        │          │
+│  │  • Admin Dashboard  │                   │  • PostgreSQL       │          │
+│  │  • Safety Tools     │                   │  • AI NSFW Detection│          │
+│  │  • SOS & Siren      │                   │  • Supabase Storage │          │
+│  └─────────────────────┘                   └─────────────────────┘          │
+│                                                       │                     │
+│                                      ┌────────────────▼────────────┐        │
+│                                      │   Cloud Deployment          │        │
+│                                      │   (Render / Cloud Run)      │        │
+│                                      └─────────────────────────────┘        │
 └─────────────────────────────────────────────────────────────────────────────┘
-```
+
 
 ### Tech Stack Summary
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Mobile App** | Flutter (Dart) | Cross-platform mobile app (Android/iOS/Web) |
-| **Web Frontend** | Angular 17+ (TypeScript) | Web application with TailwindCSS |
 | **Backend API** | FastAPI (Python) | RESTful API with OAuth 2.0 authentication |
-| **Database** | SQLite (dev) / PostgreSQL (prod) | Issue and user data storage |
+| **Database** | PostgreSQL (Supabase) | Scalable production database |
+| **Safety Tools** | Geolocator, SMS | Location sharing and emergency alerts |
+| **AI Processing** | Nude (Python) | Automated NSFW detection for safety |
 | **Image Storage** | Supabase Storage | Cloud storage for uploaded images |
 | **Authentication** | Google & GitHub OAuth | Social login via Authlib |
 | **Deployment** | Render / GCP Cloud Run | Docker-based cloud hosting |
@@ -67,36 +65,13 @@ CampusFix/
 │
 ├── Backend/                     # Python FastAPI Backend
 │   ├── main.py                  # Main application with all API endpoints
-│   ├── models.py                # SQLAlchemy ORM models (Issue table)
+│   ├── safety.py                # Safety-specific logic (SOS, NSFW detection)
+│   ├── models.py                # SQLAlchemy ORM models (Issue & SafetyReport)
 │   ├── database.py              # Database configuration
 │   ├── requirements.txt         # Python dependencies
 │   ├── Dockerfile               # Docker build configuration
 │   ├── render.yaml              # Render.com deployment config
-│   ├── .env                     # Environment variables (local only)
-│   ├── campusfix.db             # SQLite database (development)
-│   └── static/
-│       └── uploads/             # Local uploaded images (dev only)
-│
-├── Frontend/                    # Angular 17+ Web Application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── pages/
-│   │   │   │   ├── login/              # OAuth login page
-│   │   │   │   ├── student-submit/     # Issue submission form
-│   │   │   │   ├── student-list/       # Public issue list
-│   │   │   │   └── admin-dashboard/    # Admin management panel
-│   │   │   ├── services/
-│   │   │   │   ├── auth.service.ts     # Authentication service
-│   │   │   │   └── issue.service.ts    # Issue API service
-│   │   │   ├── components/
-│   │   │   │   └── layout/             # Shared layout component
-│   │   │   ├── guards/                 # Route guards (auth protection)
-│   │   │   └── interceptors/           # HTTP interceptors
-│   │   ├── app.routes.ts               # Application routing
-│   │   └── environments/               # Environment configs
-│   ├── Dockerfile                      # Docker build for Angular
-│   ├── nginx.conf                      # Nginx config for serving
-│   └── package.json                    # NPM dependencies
+│   └── .env                     # Environment variables (local only)
 │
 ├── flutter_app/                 # Flutter Mobile/Web Application
 │   ├── lib/
@@ -186,6 +161,14 @@ SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./campusfix.db")
 | `GET` | `/issues` | List all issues | Yes |
 | `POST` | `/issues/{id}/upvote` | Upvote an issue | Yes |
 | `PATCH` | `/issues/{id}/status` | Update issue status (admin) | Yes + Admin |
+
+### Safety & Emergency Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/safety/reports` | Submit anonymous safety report (AI NSFW check) | No |
+| `GET` | `/safety/reports` | Get all reports (Admin view) | Yes + Admin |
+| `GET` | `/safety/community` | Public community safety feed | No |
 
 ### Analytics Endpoints
 
@@ -335,26 +318,6 @@ class IssuesProvider with ChangeNotifier {
 
 ---
 
-## 🌐 Angular Frontend Details
-
-### Routes (app.routes.ts)
-
-| Path | Component | Auth Required |
-|------|-----------|---------------|
-| `/login` | LoginComponent | No |
-| `/student/submit` | StudentSubmitComponent | Yes |
-| `/student/list` | StudentList | No |
-| `/admin/dashboard` | AdminDashboard | Yes |
-
-### Services
-
-- **AuthService**: OAuth login, session management
-- **IssueService**: Issue CRUD operations
-
-### Important Note
-
-The Angular frontend uses `localhost:8000` as the API URL in development. For production, update `auth.service.ts` and `issue.service.ts` to use the deployed backend URL.
-
 ---
 
 ## ☁️ Deployment Configuration
@@ -393,13 +356,7 @@ services:
     build: ./Backend
     ports:
       - "8080:8080"
-    volumes:
-      - backend-uploads:/app/static/uploads
-      
-  frontend:
-    build: ./Frontend
-    ports:
-      - "80:80"
+
 ```
 
 ---
@@ -448,17 +405,10 @@ flutter run
 flutter build apk --release
 ```
 
-### 3. Angular Frontend Setup
-
+### 3. Verification
 ```bash
-cd Frontend
-
-# Install dependencies
-npm install
-
-# Run development server
-npm start
-# App: http://localhost:4200
+cd Backend
+python test_verification.py # Runs end-to-end verification
 ```
 
 ---
@@ -494,20 +444,22 @@ app.add_middleware(
 
 ## 📋 Feature Checklist
 
-| Feature | Backend | Flutter | Angular |
-|---------|---------|---------|---------|
-| Google OAuth Login | ✅ | ✅ | ✅ |
-| GitHub OAuth Login | ✅ | ✅ | ✅ |
-| Issue Submission | ✅ | ✅ | ✅ |
-| Image Upload | ✅ | ✅ | ✅ |
-| Issue Listing | ✅ | ✅ | ✅ |
-| Upvoting | ✅ | ✅ | ✅ |
-| Status Updates | ✅ | ✅ | ✅ |
-| Admin Dashboard | ✅ | ✅ | ✅ |
-| Admin Authorization | ✅ | ✅ | ✅ |
-| Analytics | ✅ | Partial | Partial |
-| Mobile Deep Linking | ✅ | ✅ | N/A |
-| Dark Mode | - | ✅ | ✅ |
+| Feature | Backend | Flutter |
+|---------|---------|---------|
+| Google OAuth Login | ✅ | ✅ |
+| GitHub OAuth Login | ✅ | ✅ |
+| Issue Submission | ✅ | ✅ |
+| Image Upload | ✅ | ✅ |
+| Issue Listing | ✅ | ✅ |
+| Upvoting | ✅ | ✅ |
+| Status Updates | ✅ | ✅ |
+| Admin Dashboard | ✅ | ✅ |
+| SOS & Siren Tools | ✅ | ✅ |
+| AI NSFW Recognition | ✅ | ✅ |
+| Community Safety Feed| ✅ | ✅ |
+| Analytics | ✅ | ✅ |
+| Mobile Deep Linking | ✅ | ✅ |
+| Dark Mode | - | ✅ |
 
 ---
 
@@ -528,12 +480,12 @@ When rebuilding or extending:
 | Purpose | File(s) |
 |---------|---------|
 | API Logic | `Backend/main.py` |
+| Safety & AI Logic | `Backend/safety.py` |
 | Database Models | `Backend/models.py` |
 | Flutter State | `flutter_app/lib/providers/issues_provider.dart` |
 | Flutter API Client | `flutter_app/lib/services/api_service.dart` |
 | Flutter Screens | `flutter_app/lib/screens/*.dart` |
-| Angular Services | `Frontend/src/app/services/*.ts` |
-| Deployment | `DEPLOYMENT.md`, `Backend/Dockerfile`, `render.yaml` |
+| Deployment | `Backend/Dockerfile`, `render.yaml` |
 
 ---
 

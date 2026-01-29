@@ -19,7 +19,7 @@ from pydantic import BaseModel
 load_dotenv()
 
 from dependencies import supabase
-from models import Issue, get_db, Base, engine
+from models import Issue, IssueUpvote, get_db, Base, engine
 import safety
 
 # Create tables
@@ -87,6 +87,7 @@ class IssueResponse(BaseModel):
     reporter_email: Optional[str]
     priority: str = "medium"
     category: str = "general"
+    user_has_upvoted: bool = False
 
     model_config = {"from_attributes": True}
 
@@ -261,6 +262,7 @@ async def create_issue(
         request: Request,
         description: str = Form(...),
         location: str = Form(...),
+        category: Optional[str] = Form(None),
         image: Optional[UploadFile] = File(None),
         db: Session = Depends(get_db)
 ):
@@ -280,13 +282,17 @@ async def create_issue(
         if not reporter_name:
              reporter_name = user.get('email', '').split('@')[0]
 
-        # Auto-categorization Logic
-        category = "general"
-        safety_keywords = ['fire', 'smoke', 'spark', 'wire', 'shock', 'leak', 'gas', 'explosion', 'danger', 'hazard', 'unsafe', 'broken', 'crack', 'collapse']
-        desc_lower = description.lower()
-        if any(word in desc_lower for word in safety_keywords):
-            category = "safety_hazard"
-            print(f"DEBUG: Auto-categorized as SAFETY_HAZARD")
+        # Use category from form if provided, otherwise auto-categorize
+        if not category or category == "general":
+            # Auto-categorization Logic
+            category = "general"
+            safety_keywords = ['fire', 'smoke', 'spark', 'wire', 'shock', 'leak', 'gas', 'explosion', 'danger', 'hazard', 'unsafe', 'broken', 'crack', 'collapse']
+            desc_lower = description.lower()
+            if any(word in desc_lower for word in safety_keywords):
+                category = "safety_hazard"
+                print(f"DEBUG: Auto-categorized as SAFETY_HAZARD")
+        else:
+            print(f"DEBUG: Using category from form: {category}")
 
         image_url = None
         if image:
@@ -341,21 +347,73 @@ async def create_issue(
 
 @app.get("/issues", response_model=list[IssueResponse])
 async def get_issues(request: Request, db: Session = Depends(get_db)):
-    if not get_current_user(request):
+    user = get_current_user(request)
+    if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
-    issues = db.query(Issue).order_by(Issue.created_at.desc()).all()
-    return issues
+    
+    user_id = user.get('sub')
+    
+    # Get all issues sorted by upvotes (descending)
+    issues = db.query(Issue).order_by(Issue.upvotes.desc()).all()
+    
+    # Check which issues the user has upvoted
+    issue_responses = []
+    for issue in issues:
+        user_has_upvoted = db.query(IssueUpvote).filter(
+            IssueUpvote.issue_id == issue.id,
+            IssueUpvote.user_id == user_id
+        ).first() is not None
+        
+        issue_dict = {
+            "id": issue.id,
+            "description": issue.description,
+            "location": issue.location,
+            "image_url": issue.image_url,
+            "status": issue.status,
+            "upvotes": issue.upvotes,
+            "created_at": issue.created_at,
+            "user_id": issue.user_id,
+            "reporter_name": issue.reporter_name,
+            "reporter_email": issue.reporter_email,
+            "priority": issue.priority,
+            "category": issue.category,
+            "user_has_upvoted": user_has_upvoted
+        }
+        issue_responses.append(issue_dict)
+    
+    return issue_responses
 
 
 @app.post("/issues/{issue_id}/upvote")
 async def upvote_issue(request: Request, issue_id: int, db: Session = Depends(get_db)):
-    if not get_current_user(request):
+    user = get_current_user(request)
+    if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
+    
+    user_id = user.get('sub')
+    
+    # Check if issue exists
     issue = db.query(Issue).filter(Issue.id == issue_id).first()
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
+    
+    # Check if user has already upvoted
+    existing_upvote = db.query(IssueUpvote).filter(
+        IssueUpvote.issue_id == issue_id,
+        IssueUpvote.user_id == user_id
+    ).first()
+    
+    if existing_upvote:
+        raise HTTPException(status_code=400, detail="You have already upvoted this issue")
+    
+    # Create upvote record
+    upvote = IssueUpvote(issue_id=issue_id, user_id=user_id)
+    db.add(upvote)
+    
+    # Increment upvote count
     issue.upvotes += 1
     db.commit()
+    
     return {"message": "Upvoted", "upvotes": issue.upvotes}
 
 

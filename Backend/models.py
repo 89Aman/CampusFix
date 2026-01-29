@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -37,6 +37,19 @@ class Issue(Base):
     reporter_email = Column(String, nullable=True)
     priority = Column(String, default="medium") # high, medium, low
     category = Column(String, default="general") # general, safety_hazard
+
+
+class IssueUpvote(Base):
+    __tablename__ = "issue_upvotes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    issue_id = Column(Integer, ForeignKey("issues.id"), nullable=False)
+    user_id = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint('issue_id', 'user_id', name='unique_issue_user_upvote'),
+    )
 
 
 class SafetyReport(Base):

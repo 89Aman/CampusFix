@@ -6,6 +6,23 @@
 
 ---
 
+## 🎯 The Mission
+To transform modern campus living by replacing fragmented reporting systems with a **unified, transparent, and safety-first mobile ecosystem.**
+
+### ⚠️ The Problem
+- **Fragmentation**: Issues reported via emails or phone calls often get lost.
+- **Opacity**: Students don't know the status of their reports.
+- **Safety Gaps**: Lack of immediate, coordinated emergency tools.
+- **Sluggishness**: Maintenance teams lack precise data for quick dispatch.
+
+### ✅ The CampusFix Solution
+- **Unified Portal**: One app for all maintenance and safety needs.
+- **Visual Accountability**: Public status tracking and community upvotes.
+- **Rapid Response**: GPS-tagged reporting and one-tap emergency SOS.
+- **AI Moderation**: Automated NSFW detection ensures a clean community feed.
+
+---
+
 ## 🌟 Key Features
 
 ### 🛠 Maintenance & Infrastructure
@@ -17,11 +34,12 @@
 ### 🛡 Safety & Emergency Tools
 - **🆘 SOS Button**: Instant access to emergency campus contacts (e.g., Police, Security).
 - **🚨 Virtual Siren**: Loud audible alert for immediate attention in dangerous situations.
-- **📍 Location Sharing**: Share your live GPS coordinates with trusted contacts via SMS or social apps.
 - **📢 Community Safety Feed**: An anonymous, transparent feed to keep the campus informed about safety incidents.
+- **🤖 AI Safety Check**: Automatic NSFW detection for reported media to ensure a safe community environment.
+- **📍 Location Sharing**: Share your live GPS coordinates with trusted contacts via SMS or social apps.
 
 ### 👨‍💼 Administration Portal
-- **📊 Analytics Dashboard**: View total, pending, and resolved issues at a glance.
+- **📊 Analytics Dashboard (Mobile Integrated)**: View total, pending, and resolved issues at a glance directly in the app.
 - **🛡️ Role-Based Access**: Secure dashboard protected by authorized admin emails.
 - **🔄 Priority Management**: Data-driven task prioritization based on community feedback.
 
@@ -32,10 +50,10 @@
 | Layer | Technology |
 | :--- | :--- |
 | **Mobile App** | Flutter (Android/iOS) |
-| **Web Frontend** | Angular 17+ (TailwindCSS) |
 | **Backend API** | FastAPI (Python 3.11) |
 | **Database** | PostgreSQL (Supabase) |
 | **Storage** | Supabase Storage (Images) |
+| **AI Security** | Nude-AI (Python-based detection) |
 | **Authentication** | OAuth 2.0 (Google & GitHub) |
 
 ---
@@ -74,13 +92,6 @@ cd flutter_app
 flutter pub get
 flutter build apk --release # To generate the installable APK
 flutter run # To run in debug mode on a connected device
-```
-
-### 4️⃣ Web Setup (Angular)
-```bash
-cd Frontend
-npm install
-npm start
 ```
 
 ---
