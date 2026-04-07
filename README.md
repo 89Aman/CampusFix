@@ -1,3 +1,5 @@
+> [!WARNING]
+> **This project is no longer deployed or maintained on cloud .** The live instance has been shut down. You may still clone and run it locally, but no active hosting or support is provided.
 # 🏫 CampusFix - Smart Campus Maintenance & Safety Platform
 
 **CampusFix** is a next-generation platform designed to streamline campus facility management and enhance student safety. It provides a real-time, transparent bridge between students, staff, and administration.
